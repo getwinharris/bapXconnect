@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qwen2.5-Coder Model Demo - bapXconnect</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+            color: #e6e6e6;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #4361ee;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #f72585;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #a9d6e5;
+            margin-bottom: 30px;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #f72585;
+            background: rgba(25, 25, 40, 0.8);
+            color: white;
+            resize: vertical;
+            font-size: 1rem;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(90deg, #f72585, #b5179e);
+            color: white;
+            flex-grow: 1;
+        }
+        
+        .primary-btn:hover {
+            background: linear-gradient(90deg, #b5179e, #7209b7);
+            transform: translateY(-2px);
+        }
+        
+        .secondary-btn {
+            background: rgba(100, 100, 140, 0.5);
+            color: #a9d6e5;
+            border: 1px solid #f72585;
+        }
+        
+        .secondary-btn:hover {
+            background: rgba(100, 100, 140, 0.8);
+        }
+        
+        .response-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(25, 25, 40, 0.6);
+            border-radius: 10px;
+            border: 1px solid #4cc9f0;
+        }
+        
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #4cc9f0;
+        }
+        
+        #response {
+            min-height: 200px;
+            padding: 15px;
+            background: rgba(20, 20, 35, 0.9);
+            border-radius: 8px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .session-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #f72585;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .code-block {
+            background: rgba(30, 30, 46, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            border-left: 3px solid #f72585;
+        }
+        
+        .rag-section {
+            background: rgba(40, 20, 60, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .rag-input {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #7209b7;
+            background: rgba(25, 25, 40, 0.8);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Qwen2.5-Coder Model Demo</h1>
+        <p class="subtitle">Specialized coding model powered by bapXconnect API</p>
+        
+        <div class="model-info">
+            <p><strong>Model:</strong> Qwen/Qwen2.5-Coder-3B (via Hugging Face)</p>
+            <p><strong>Deployment:</strong> Oracle Cloud Infrastructure at 152.70.70.254</p>
+        </div>
+        
+        <div class="input-section">
+            <label for="user-input">Enter your coding query:</label>
+            <textarea id="user-input" placeholder="Ask about code: 'Explain this function', 'Fix this bug', 'Write a React component for...', etc."></textarea>
+            
+            <div class="controls">
+                <button class="btn primary-btn" onclick="sendRequest()">Send Request</button>
+                <button class="btn secondary-btn" onclick="clearChat()">Clear</button>
+                <button class="btn secondary-btn" onclick="newSession()">New Session</button>
+            </div>
+        </div>
+        
+        <div class="rag-section">
+            <h3>RAG Context (Retrieve-Augmented Generation)</h3>
+            <p>Add relevant code snippets or documentation for enhanced responses:</p>
+            <textarea id="rag-input" class="rag-input" placeholder="Paste relevant code snippets, documentation, or context here..."></textarea>
+        </div>
+        
+        <div class="session-controls">
+            <button class="btn secondary-btn" onclick="loadSession()">Load Session</button>
+            <button class="btn secondary-btn" onclick="saveSession()">Save Session</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processing your coding request with Qwen2.5-Coder model...</p>
+        </div>
+        
+        <div class="response-section">
+            <div class="response-header">
+                <h2>Coding Response</h2>
+                <button class="btn secondary-btn" onclick="copyResponse()">Copy Response</button>
+            </div>
+            <div id="response">Your coding response will appear here...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://getwinharris.github.io/bapXconnect/api/v1/chat/completions';
+        const API_KEY = 'getwinharris.github.io/bapXconnect/api';
+        let currentSession = [];
+        let currentModel = 'qwen2.5-coder-3b';
+        
+        async function sendRequest() {
+            const input = document.getElementById('user-input').value;
+            const ragContext = document.getElementById('rag-input').value;
+            const responseDiv = document.getElementById('response');
+            const loadingDiv = document.getElementById('loading');
+            
+            if (!input.trim()) {
+                alert('Please enter a coding query');
+                return;
+            }
+            
+            // Show loading indicator
+            loadingDiv.style.display = 'block';
+            responseDiv.textContent = 'Processing...';
+            
+            try {
+                // Prepare the request with session context and RAG
+                let messages = [...currentSession]; // Include previous conversation
+                
+                // Add RAG context if available
+                if (ragContext.trim()) {
+                    messages.unshift({
+                        role: 'system',
+                        content: `RAG Context:\n${ragContext}\n\nUse this context to assist with coding requests.`
+                    });
+                }
+                
+                // Add current user message
+                messages.push({
+                    role: 'user',
+                    content: input
+                });
+                
+                const requestBody = {
+                    model: currentModel,
+                    messages: messages,
+                    temperature: 0.3, // Lower temperature for more deterministic coding responses
+                    max_tokens: 2048
+                };
+                
+                // Send request to bapXconnect API (connected to Qwen2.5-Coder)
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Add to session history
+                const responseContent = data.choices[0]?.message?.content || 'No response from model';
+                currentSession.push(
+                    { role: 'user', content: input },
+                    { role: 'assistant', content: responseContent }
+                );
+                
+                // Display the response
+                responseDiv.innerHTML = formatCodeResponse(responseContent);
+                
+                // Store session in localStorage
+                localStorage.setItem('bapXconnectSession', JSON.stringify(currentSession));
+            } catch (error) {
+                console.error('Error:', error);
+                responseDiv.innerHTML = `Error: ${error.message}`;
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+        
+        function formatCodeResponse(text) {
+            // Format code blocks in responses
+            const codeBlockRegex = /```([\s\S]*?)```/g;
+            let lastIndex = 0;
+            let result = '';
+            
+            let match;
+            while ((match = codeBlockRegex.exec(text)) !== null) {
+                // Add text before the code block
+                result += text.substring(lastIndex, match.index);
+                
+                // Create a formatted code block
+                const codeContent = match[1].trim();
+                result += `<div class="code-block">${escapeHtml(codeContent)}</div>`;
+                
+                lastIndex = match.index + match[0].length;
+            }
+            
+            // Add remaining text after the last code block
+            result += text.substring(lastIndex);
+            
+            return result;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function clearChat() {
+            document.getElementById('user-input').value = '';
+            document.getElementById('response').textContent = 'Your coding response will appear here...';
+        }
+        
+        function newSession() {
+            currentSession = [];
+            document.getElementById('response').textContent = 'Starting a new coding session...';
+            localStorage.removeItem('bapXconnectSession');
+        }
+        
+        function loadSession() {
+            const savedSession = localStorage.getItem('bapXconnectSession');
+            if (savedSession) {
+                currentSession = JSON.parse(savedSession);
+                document.getElementById('response').textContent = `Loaded session with ${currentSession.length/2} exchanges.`;
+            } else {
+                alert('No saved session found');
+            }
+        }
+        
+        function saveSession() {
+            if (currentSession.length > 0) {
+                localStorage.setItem('bapXconnectSession', JSON.stringify(currentSession));
+                alert(`Session saved with ${currentSession.length} messages.`);
+            } else {
+                alert('No session to save');
+            }
+        }
+        
+        function copyResponse() {
+            const responseText = document.getElementById('response').innerText;
+            navigator.clipboard.writeText(responseText)
+                .then(() => {
+                    alert('Response copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        }
+        
+        // Initialize with a sample session from localStorage if available
+        window.onload = function() {
+            const savedSession = localStorage.getItem('bapXconnectSession');
+            if (savedSession) {
+                currentSession = JSON.parse(savedSession);
+                document.getElementById('response').textContent = "Session loaded. Ready for coding questions!";
+            }
+        };
+        
+        // Allow Enter to send (with Shift+Enter for new line)
+        document.getElementById('user-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendRequest();
+            }
+        });
+    </script>
+</body>
+</html>

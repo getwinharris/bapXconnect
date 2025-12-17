@@ -1,0 +1,10 @@
+*.safetensors
+*.bin
+*.pth
+*.ckpt
+*.gguf
+model/
+weights/
+.tensor
+!api/
+!model/README.md

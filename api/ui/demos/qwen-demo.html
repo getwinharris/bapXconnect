@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qwen2.5-Omni Model Demo - bapXconnect</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #4361ee;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4cc9f0;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #a9d6e5;
+            margin-bottom: 30px;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #4361ee;
+            background: rgba(25, 25, 40, 0.8);
+            color: white;
+            resize: vertical;
+            font-size: 1rem;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+            color: white;
+            flex-grow: 1;
+        }
+        
+        .primary-btn:hover {
+            background: linear-gradient(90deg, #3a0ca3, #7209b7);
+            transform: translateY(-2px);
+        }
+        
+        .secondary-btn {
+            background: rgba(100, 100, 140, 0.5);
+            color: #a9d6e5;
+            border: 1px solid #4361ee;
+        }
+        
+        .secondary-btn:hover {
+            background: rgba(100, 100, 140, 0.8);
+        }
+        
+        .response-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(25, 25, 40, 0.6);
+            border-radius: 10px;
+            border: 1px solid #f72585;
+        }
+        
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #f72585;
+        }
+        
+        #response {
+            min-height: 200px;
+            padding: 15px;
+            background: rgba(20, 20, 35, 0.9);
+            border-radius: 8px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .model-selector {
+            margin-bottom: 20px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #4361ee;
+            background: rgba(25, 25, 40, 0.8);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .image-preview {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #4cc9f0;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .usage-info {
+            background: rgba(20, 50, 30, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .usage-info h3 {
+            color: #4cc9f0;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Qwen2.5-Omni Model Demo</h1>
+        <p class="subtitle">Powered by bapXconnect API - Connects to Hugging Face models</p>
+        
+        <div class="model-selector">
+            <label for="model-select">Select Model:</label>
+            <select id="model-select">
+                <option value="qwen2.5-omni">Qwen2.5-Omni (Multimodal)</option>
+                <option value="qwen2.5-coder">Qwen2.5-Coder (Code Assistant)</option>
+                <option value="custom">Custom Model</option>
+            </select>
+        </div>
+        
+        <div class="input-section">
+            <label for="user-input">Enter your prompt:</label>
+            <textarea id="user-input" placeholder="Ask anything - text, describe an image, or ask about code..."></textarea>
+            
+            <div class="controls">
+                <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="previewImage()">
+                <button class="btn secondary-btn" onclick="document.getElementById('image-upload').click()">Attach Image</button>
+                <button class="btn primary-btn" onclick="sendRequest()">Send Request</button>
+                <button class="btn secondary-btn" onclick="clearChat()">Clear</button>
+            </div>
+            
+            <div class="image-preview" id="image-preview">
+                <img id="preview-img" src="" alt="Image preview">
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processing your request with the Qwen2.5-Omni model...</p>
+        </div>
+        
+        <div class="response-section">
+            <div class="response-header">
+                <h2>Response</h2>
+                <button class="btn secondary-btn" onclick="copyResponse()">Copy Response</button>
+            </div>
+            <div id="response">Your response will appear here...</div>
+        </div>
+        
+        <div class="usage-info">
+            <h3>API Connection Information</h3>
+            <p><strong>Endpoint:</strong> https://getwinharris.github.io/bapXconnect/api/v1/chat/completions</p>
+            <p><strong>Authentication:</strong> Bearer Token - getwinharris.github.io/bapXconnect/api</p>
+            <p><strong>Model:</strong> Qwen2.5-Omni (via Hugging Face) running on Oracle Cloud @ 152.70.70.254</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://getwinharris.github.io/bapXconnect/api/v1/chat/completions';
+        const API_KEY = 'getwinharris.github.io/bapXconnect/api';
+        let imageBase64 = null;
+        
+        async function sendRequest() {
+            const input = document.getElementById('user-input').value;
+            const model = document.getElementById('model-select').value;
+            const responseDiv = document.getElementById('response');
+            const loadingDiv = document.getElementById('loading');
+            
+            if (!input.trim()) {
+                alert('Please enter a prompt');
+                return;
+            }
+            
+            // Show loading indicator
+            loadingDiv.style.display = 'block';
+            responseDiv.textContent = 'Processing...';
+            
+            try {
+                // Prepare the request
+                let messages = [{ role: 'user', content: input }];
+                
+                // If image is attached, format appropriately
+                if (imageBase64) {
+                    messages = [{
+                        role: 'user',
+                        content: [
+                            { type: 'text', text: input },
+                            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${imageBase64}` } }
+                        ]
+                    }];
+                }
+                
+                const requestBody = {
+                    model: model === 'custom' ? 'qwen2.5-omni' : model,
+                    messages: messages,
+                    temperature: 0.7,
+                    max_tokens: 1024
+                };
+                
+                // Send request to bapXconnect API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Display the response
+                const content = data.choices[0].message.content;
+                responseDiv.textContent = content;
+            } catch (error) {
+                console.error('Error:', error);
+                responseDiv.textContent = `Error: ${error.message}`;
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+        
+        function previewImage() {
+            const fileInput = document.getElementById('image-upload');
+            const previewDiv = document.getElementById('image-preview');
+            const previewImg = document.getElementById('preview-img');
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    imageBase64 = e.target.result.split(',')[1]; // Extract base64 part
+                    previewDiv.style.display = 'block';
+                };
+                
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+        
+        function clearChat() {
+            document.getElementById('user-input').value = '';
+            document.getElementById('response').textContent = 'Your response will appear here...';
+            document.getElementById('image-preview').style.display = 'none';
+            imageBase64 = null;
+            document.getElementById('image-upload').value = '';
+        }
+        
+        function copyResponse() {
+            const responseText = document.getElementById('response').textContent;
+            navigator.clipboard.writeText(responseText)
+                .then(() => {
+                    alert('Response copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+        }
+        
+        // Allow Enter to send (with Shift+Enter for new line)
+        document.getElementById('user-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendRequest();
+            }
+        });
+    </script>
+</body>
+</html>

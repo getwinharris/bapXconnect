@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - bapXconnect API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%);
+            color: #e6e6e6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+            background: rgba(30, 30, 46, 0.9);
+            border-radius: 15px;
+            border: 1px solid #4361ee;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .dashboard {
+            display: none;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #4cc9f0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a9d6e5;
+        }
+        
+        input[type="text"], input[type="email"], input[type="password"], select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #4361ee;
+            background: rgba(25, 25, 40, 0.8);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+            color: white;
+            width: 100%;
+        }
+        
+        .primary-btn:hover {
+            background: linear-gradient(90deg, #3a0ca3, #7209b7);
+        }
+        
+        .secondary-btn {
+            background: rgba(76, 201, 240, 0.2);
+            color: #4cc9f0;
+            border: 1px solid #4cc9f0;
+        }
+        
+        .secondary-btn:hover {
+            background: rgba(76, 201, 240, 0.4);
+        }
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            background: rgba(25, 25, 40, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            height: fit-content;
+        }
+        
+        .sidebar-nav ul {
+            list-style: none;
+        }
+        
+        .sidebar-nav li {
+            margin-bottom: 10px;
+        }
+        
+        .sidebar-nav a {
+            color: #a9d6e5;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background: rgba(76, 201, 240, 0.2);
+            color: #4cc9f0;
+        }
+        
+        .main-content {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 10px;
+            padding: 30px;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .section-title {
+            color: #4cc9f0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #4361ee;
+        }
+        
+        .api-keys-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .api-keys-table th, .api-keys-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #4361ee;
+        }
+        
+        .api-keys-table th {
+            color: #f72585;
+        }
+        
+        .model-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .model-card {
+            background: rgba(50, 50, 70, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #3a0ca3;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .model-card:hover, .model-card.selected {
+            border-color: #f72585;
+            background: rgba(120, 20, 100, 0.3);
+        }
+        
+        .model-name {
+            color: #4cc9f0;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .model-desc {
+            color: #a9d6e5;
+            font-size: 0.9rem;
+        }
+        
+        .key-generator {
+            background: rgba(50, 50, 70, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .notification {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .success {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+        
+        .error {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <div class="header">
+            <h1>Admin Login</h1>
+            <p>Access the bapXconnect API management panel</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required placeholder="admin@example.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn primary-btn">Login</button>
+        </form>
+    </div>
+    
+    <div class="dashboard" id="dashboard">
+        <div class="dashboard-container">
+            <div class="sidebar">
+                <div class="header">
+                    <h2>Admin Panel</h2>
+                </div>
+                <nav class="sidebar-nav">
+                    <ul>
+                        <li><a href="#" class="active" onclick="showSection('overview')">Overview</a></li>
+                        <li><a href="#" onclick="showSection('apiKeys')">API Keys</a></li>
+                        <li><a href="#" onclick="showSection('modelConfig')">Model Configuration</a></li>
+                        <li><a href="#" onclick="showSection('users')">Users</a></li>
+                        <li><a href="#" onclick="showSection('settings')">Settings</a></li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <div class="main-content">
+                <div id="overview" class="section active">
+                    <h2 class="section-title">Dashboard Overview</h2>
+                    <p>Welcome to the bapXconnect API Admin Panel. Manage API keys, configure models, and monitor usage.</p>
+                    
+                    <div style="margin-top: 30px;">
+                        <h3>System Status</h3>
+                        <p><strong>Hugging Face Models Connection:</strong> <span id="hf-status" style="color: #28a745;">Connected</span></p>
+                        <p><strong>Oracle Cloud Deployment:</strong> <span id="oracle-status" style="color: #28a745;">Active</span></p>
+                        <p><strong>Total API Keys Generated:</strong> <span id="total-keys">0</span></p>
+                        <p><strong>Active Models:</strong> <span id="active-models">0</span></p>
+                    </div>
+                </div>
+                
+                <div id="apiKeys" class="section">
+                    <h2 class="section-title">API Key Management</h2>
+                    <button class="btn secondary-btn" onclick="generateApiKey()">Generate New API Key</button>
+                    
+                    <div style="margin-top: 20px;">
+                        <table class="api-keys-table">
+                            <thead>
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Model</th>
+                                    <th>Created</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="api-keys-body">
+                                <!-- API keys will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="modelConfig" class="section">
+                    <h2 class="section-title">Model Configuration</h2>
+                    <p>Connect to Hugging Face models deployed on Oracle Cloud infrastructure</p>
+                    
+                    <div class="model-selection">
+                        <div class="model-card" onclick="selectModel('qwen2.5-omni', this)">
+                            <div class="model-name">Qwen2.5-Omni</div>
+                            <div class="model-desc">Multimodal model via Hugging Face @ Qwen/Qwen2.5-Omni-7B</div>
+                        </div>
+                        <div class="model-card" onclick="selectModel('qwen2.5-coder', this)">
+                            <div class="model-name">Qwen2.5-Coder</div>
+                        <div class="model-card" onclick="selectModel('qwen3-omni', this)">
+                            <div class="model-name">Qwen3-Omni-30B-A3B</div>
+                            <div class="model-desc">Latest multimodal model via Hugging Face @ Qwen/Qwen3-Omni-30B-A3B-Instruct</div>
+                        </div>
+                            <div class="model-desc">Specialized coding model via Hugging Face</div>
+                        </div>
+                        <div class="model-card" onclick="selectModel('custom-model', this)">
+                            <div class="model-name">Custom Model</div>
+                            <div class="model-desc">Upload your own model via Oracle Cloud</div>
+                        </div>
+                    </div>
+                    
+                    <div class="key-generator" id="key-generator" style="display: none;">
+                        <h3>Generate API Key for Selected Model</h3>
+                        <div class="form-group">
+                            <label for="product-name">Product/App Name</label>
+                            <input type="text" id="product-name" placeholder="e.g., My Coding Tool">
+                        </div>
+                        <div class="form-group">
+                            <label for="model-endpoint">Model Endpoint</label>
+                            <input type="text" id="model-endpoint" placeholder="API endpoint for this model">
+                        </div>
+                        <button class="btn primary-btn" onclick="generateModelApiKey()">Generate Key</button>
+                    </div>
+                </div>
+                
+                <div id="users" class="section">
+                    <h2 class="section-title">User Management</h2>
+                    <p>Currently no user accounts - API keys are generated directly</p>
+                </div>
+                
+                <div id="settings" class="section">
+                    <h2 class="section-title">System Settings</h2>
+                    <p>Hugging Face Model Path: <code>@huggingface/qwen/models</code></p>
+                    <p>Oracle Cloud IP: <code>152.70.70.254</code></p>
+                    <p>API Endpoint: <code>https://getwinharris.github.io/bapXconnect/api</code></p>
+                    <p>Model Weights Location: <code>Oracle Cloud Instance 152.70.70.254</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Admin login credentials
+        const ADMIN_EMAIL = 'getwinharris@gmail.com';
+        const ADMIN_PASSWORD = 'bapX2025#';
+        
+        // Available models that connect to Hugging Face
+        const MODELS = [
+            { id: 'qwen2.5-omni', name: 'Qwen2.5-Omni', desc: 'Multimodal model via Hugging Face @ Qwen/Qwen2.5-Omni-7B', endpoint: 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Omni-7B' },
+            { id: 'qwen2.5-coder', name: 'Qwen2.5-Coder', desc: 'Specialized coding model via Hugging Face', endpoint: 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-7B' },
+                        <div class="model-card" onclick="selectModel('qwen3-omni', this)">
+                            <div class="model-name">Qwen3-Omni-30B-A3B</div>
+                            <div class="model-desc">Latest multimodal model via Hugging Face @ Qwen/Qwen3-Omni-30B-A3B-Instruct</div>
+                        </div>
+            { id: 'custom-model', name: 'Custom Model', desc: 'Your custom model via Oracle Cloud', endpoint: 'https://your-oracle-instance.com/models/custom' }
+        ];
+        
+        let selectedModel = null;
+        let apiKeys = [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    
+                    // Load existing data
+                    loadDashboardData();
+                } else {
+                    alert('Invalid credentials');
+                }
+            });
+        });
+        
+        function loadDashboardData() {
+            // Update dashboard stats
+            document.getElementById('total-keys').textContent = apiKeys.length;
+            document.getElementById('active-models').textContent = MODELS.length;
+        }
+        
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function selectModel(modelId, element) {
+            // Update UI selection
+            document.querySelectorAll('.model-card').forEach(card => {
+                card.style.borderColor = '#3a0ca3';
+                card.style.backgroundColor = 'rgba(50, 50, 70, 0.7)';
+            });
+            element.style.borderColor = '#f72585';
+            element.style.backgroundColor = 'rgba(120, 20, 100, 0.3)';
+            
+            selectedModel = MODELS.find(m => m.id === modelId);
+            document.getElementById('key-generator').style.display = 'block';
+            document.getElementById('model-endpoint').value = selectedModel.endpoint;
+        }
+        
+        function generateApiKey() {
+            if (!selectedModel) {
+                alert('Please select a model first');
+                return;
+            }
+            
+            const productName = document.getElementById('product-name').value || 'unnamed-app';
+            const newKey = generateUniqueKey();
+            
+            const keyObj = {
+                id: apiKeys.length + 1,
+                key: newKey,
+                model: selectedModel.name,
+                productName: productName,
+                createdAt: new Date().toISOString(),
+                status: 'active'
+            };
+            
+            apiKeys.push(keyObj);
+            updateApiKeysTable();
+            
+            // Show success notification
+            showNotification('API key generated successfully!', 'success');
+        }
+        
+        function generateModelApiKey() {
+            generateApiKey();
+        }
+        
+        function generateUniqueKey() {
+            // Generate a unique API key
+            return 'bapX_' + Math.random().toString(36).substr(2, 10) + '_' + Date.now().toString(36);
+        }
+        
+        function updateApiKeysTable() {
+            const tbody = document.getElementById('api-keys-body');
+            tbody.innerHTML = '';
+            
+            apiKeys.forEach(key => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${key.key}</td>
+                    <td>${key.model}</td>
+                    <td>${new Date(key.createdAt).toLocaleDateString()}</td>
+                    <td>${key.status}</td>
+                    <td>
+                        <button class="btn secondary-btn" onclick="copyToClipboard('${key.key}')">Copy</button>
+                        <button class="btn secondary-btn" onclick="deleteApiKey(${key.id})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                showNotification('API key copied to clipboard!', 'success');
+            });
+        }
+        
+        function deleteApiKey(id) {
+            if (confirm('Are you sure you want to delete this API key?')) {
+                apiKeys = apiKeys.filter(key => key.id !== id);
+                updateApiKeysTable();
+                showNotification('API key deleted', 'success');
+            }
+        }
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            const mainContent = document.querySelector('.main-content');
+            mainContent.insertBefore(notification, mainContent.firstChild);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

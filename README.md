@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # bapXconnect - Universal AI Model API Gateway
 
 ## Overview
@@ -112,3 +113,7 @@ Client applications connect to the API using Alibaba/DashScope format with X-Das
 - Expand multimodal capabilities
 - Add more sophisticated session management
 - Enhance admin panel features
+=======
+# bapXconnect
+ML research - Private - Bapx Media Hub 
+>>>>>>> b71f9da4d6d7e9c6e1013b6567caa41624a2b8e7

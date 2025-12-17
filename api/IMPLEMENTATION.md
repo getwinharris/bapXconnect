@@ -4,41 +4,43 @@
 The bapX API provides an interface to the Qwen2.5-Omni, Qwen2.5-Coder model, following the official implementation pattern from the Hugging Face transformers library.
 
 ## Model Integration
-The API connects to the local Qwen2.5-Omni, Qwen2.5-Coder model using the official transformers interface:
+The API connects to the remote Qwen2.5-Omni, Qwen2.5-Coder model using the official transformers interface:
 
 ```python
 from transformers import Qwen2_5OmniForConditionalGeneration, Qwen2_5OmniProcessor
 
 model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
-    "/path/to/local/qwen2.5-omni-model/",  # Local model path
+    "https://huggingface.co",  # Remote model source
     dtype="auto",
     device_map="auto"
 )
-processor = Qwen2_5OmniProcessor.from_pretrained("/path/to/local/qwen2.5-omni-model/")
+processor = Qwen2_5OmniProcessor.from_pretrained("https://huggingface.co")
 ```
 
 ## API Endpoints
 
-### Chat Completion
-`POST /v1/chat/completions`
+### Text Generation
+`POST /api/v1/text/generation`
 
-This endpoint mirrors the OpenAI API format but connects to the local Qwen2.5-Omni, Qwen2.5-Coder model.
+This endpoint follows the Alibaba/DashScope API format and connects to the remote Qwen2.5-Omni, Qwen2.5-Coder model.
 
 #### Request
 ```json
 {
-  "model": "qwen2.5-omni-local",
-  "messages": [
-    {
-      "role": "user",
-      "content": [
-        {"type": "text", "text": "Describe this image:"},
-        {"type": "image", "image_url": "data:image/jpeg;base64,..."}
-      ]
-    }
-  ],
-  "temperature": 0.7,
-  "max_tokens": 1024
+  "model": "qwen2.5-omni",
+  "input": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "Describe this image:",
+        "image_url": "data:image/jpeg;base64,..."
+      }
+    ]
+  },
+  "parameters": {
+    "temperature": 0.7,
+    "max_tokens": 1024
+  }
 }
 ```
 
@@ -74,12 +76,12 @@ text = processor.batch_decode(text_ids, skip_special_tokens=True, clean_up_token
 ```
 
 ### Model Information
-`GET /v1/models`
+`GET /api/v1/models`
 
 Returns information about the loaded Qwen2.5-Omni, Qwen2.5-Coder model.
 
 ### Token Counting
-`POST /v1/chat/tokenize`
+`POST /api/v1/text/tokenize`
 
 Counts tokens in a conversation using the model's tokenizer.
 
@@ -107,10 +109,10 @@ The API integrates with the project-based session system:
 - `.rag.json` - knowledge base for retrieval-augmented generation
 
 ## Configuration
-The API is configured to work with local model files and follows the official implementation guidelines from the documentation.
+The API is configured to work with remote model sources from Hugging Face and follows the official implementation guidelines from the documentation.
 
 ## Audio Output
-When audio output is required, the system prompt must include: 
+When audio output is required, the system prompt must include:
 "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."
 
 The model supports voice selection with the `spk` parameter ("Chelsie" or "Ethan").

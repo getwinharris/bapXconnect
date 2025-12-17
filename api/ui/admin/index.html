@@ -308,11 +308,11 @@
                         </div>
                         <div class="model-card" onclick="selectModel('qwen2.5-coder', this)">
                             <div class="model-name">Qwen2.5-Coder</div>
+                            <div class="model-desc">Specialized coding model via Hugging Face</div>
+                        </div>
                         <div class="model-card" onclick="selectModel('qwen3-omni', this)">
                             <div class="model-name">Qwen3-Omni-30B-A3B</div>
                             <div class="model-desc">Latest multimodal model via Hugging Face @ Qwen/Qwen3-Omni-30B-A3B-Instruct</div>
-                        </div>
-                            <div class="model-desc">Specialized coding model via Hugging Face</div>
                         </div>
                         <div class="model-card" onclick="selectModel('custom-model', this)">
                             <div class="model-name">Custom Model</div>
@@ -344,6 +344,13 @@
                     <p>Hugging Face Model Path: <code>@huggingface/qwen/models</code></p>
                     <p>Oracle Cloud IP: <code>152.70.70.254</code></p>
                     <p>API Endpoint: <code>https://getwinharris.github.io/bapXconnect/api</code></p>
+                    <p>Alibaba/DashScope Endpoints:</p>
+                    <ul>
+                        <li>Text Generation: <code>/api/v1/text/generation</code></li>
+                        <li>Model List: <code>/api/v1/models</code></li>
+                        <li>Token Count: <code>/api/v1/text/tokenize</code></li>
+                    </ul>
+                    <p>Authentication: Use <code>X-DashScope-Token</code> header</p>
                     <p>Model Weights Location: <code>Oracle Cloud Instance 152.70.70.254</code></p>
                 </div>
             </div>
@@ -359,10 +366,7 @@
         const MODELS = [
             { id: 'qwen2.5-omni', name: 'Qwen2.5-Omni', desc: 'Multimodal model via Hugging Face @ Qwen/Qwen2.5-Omni-7B', endpoint: 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Omni-7B' },
             { id: 'qwen2.5-coder', name: 'Qwen2.5-Coder', desc: 'Specialized coding model via Hugging Face', endpoint: 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-7B' },
-                        <div class="model-card" onclick="selectModel('qwen3-omni', this)">
-                            <div class="model-name">Qwen3-Omni-30B-A3B</div>
-                            <div class="model-desc">Latest multimodal model via Hugging Face @ Qwen/Qwen3-Omni-30B-A3B-Instruct</div>
-                        </div>
+            { id: 'qwen3-omni', name: 'Qwen3-Omni-30B-A3B', desc: 'Latest multimodal model via Hugging Face @ Qwen/Qwen3-Omni-30B-A3B-Instruct', endpoint: 'https://api-inference.huggingface.co/models/Qwen/Qwen3-Omni-30B-A3B-Instruct' },
             { id: 'custom-model', name: 'Custom Model', desc: 'Your custom model via Oracle Cloud', endpoint: 'https://your-oracle-instance.com/models/custom' }
         ];
         

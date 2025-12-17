@@ -1,29 +1,30 @@
 {
   "api": {
-    "endpoint": "https://getwinharris.github.io/bapXcoder/api",
+    "endpoint": "https://getwinharris.github.io/bapXconnect/api",
     "version": "v1",
-    "model": "qwen2.5-omni-local",
-    "apiKey": "getwinharris.github.io/bapXcoder/api",
+    "model": "qwen2.5-omni",
+    "apiKey": "getwinharris.github.io/bapXconnect/api",
     "timeout": 30000,
-    "maxRetries": 3
+    "maxRetries": 3,
+    "authHeader": "X-DashScope-Token"
   },
   "session": {
-    "storagePath": "~/.clibapX/",
+    "storagePath": "Client Application Storage (varies by app)/",
     "contextWindowSize": 32768,
     "persistContext": true
   },
   "multimodal": {
     "imageSupport": true,
-    "audioSupport": true, 
+    "audioSupport": true,
     "videoSupport": true,
     "maxAttachmentSize": "50MB"
   },
-  "localModel": {
-    "path": "/oracle/models/qwen2.5-omni/",
+  "bapxModel": {
+    "path": "https://huggingface.co",
     "quantization": "4bit",
     "gpu": {
-      "enabled": true,
-      "memoryRequired": "24GB"
+      "enabled": false,
+      "memoryRequired": "0GB"
     }
   }
 }

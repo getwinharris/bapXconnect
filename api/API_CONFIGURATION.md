@@ -7,17 +7,17 @@ The bapXconnect API serves as a bridge between client applications and AI models
 
 Base URL: `https://getwinharris.github.io/bapXconnect/api`
 
-Current API Key: `getwinharris.github.io/bapXconnect/api`
+API Key Header: `X-DashScope-Token: getwinharris.github.io/bapXconnect/api`
 
 ### Supported Models
-- `qwen2.5-omni-local`
-- `qwen2.5-coder-local` 
-- `qwen3-omni-30b-a3b-local`
+- `qwen2.5-omni`
+- `qwen2.5-coder`
+- `qwen3-omni-30b-a3b-instruct`
 
 ### Available Endpoints
-- `POST /v1/chat/completions`
-- `GET /v1/models`
-- `POST /v1/chat/tokenize`
+- `POST /api/v1/text/generation`
+- `GET /api/v1/models`
+- `POST /api/v1/text/tokenize`
 
 ## Memory Systems
 
@@ -45,9 +45,9 @@ const API_CONFIG = {
   baseUrl: 'https://getwinharris.github.io/bapXconnect/api',
   apiKey: 'getwinharris.github.io/bapXconnect/api',
   endpoints: {
-    chat: '/v1/chat/completions',
-    models: '/v1/models',
-    tokenize: '/v1/chat/tokenize'
+    generation: '/api/v1/text/generation',
+    models: '/api/v1/models',
+    tokenize: '/api/v1/text/tokenize'
   }
 };
 ```

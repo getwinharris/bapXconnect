@@ -9,47 +9,49 @@ import requests
 import json
 
 class BapXApiClient:
-    def __init__(self, base_url="https://getwinharris.github.io/bapXcoder/api", api_key="getwinharris.github.io/bapXcoder/api"):
+    def __init__(self, base_url="https://getwinharris.github.io/bapXconnect/api", api_key="getwinharris.github.io/bapXconnect/api"):
         self.base_url = base_url
         self.headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}",
+            "X-DashScope-Token": api_key,  # Alibaba-style API key header
             "User-Agent": "bapXcli/1.0"
         }
-    
-    def chat_completion(self, messages, model="qwen2.5-omni-local", **kwargs):
+
+    def text_generation(self, input_data, model="qwen2.5-omni", **kwargs):
         """
-        Send a chat completion request to the bapX API
+        Send a text generation request to the bapX API (Alibaba/DashScope style)
         """
-        url = f"{self.base_url}/v1/chat/completions"
-        
+        url = f"{self.base_url}/api/v1/text/generation"
+
         payload = {
             "model": model,
-            "messages": messages,
-            **kwargs  # Additional parameters like temperature, max_tokens, etc.
+            "input": input_data,
+            "parameters": kwargs  # Additional parameters like temperature, max_tokens, etc.
         }
-        
+
         response = requests.post(url, headers=self.headers, json=payload)
         response.raise_for_status()
-        
+
         return response.json()
 
 # Example usage:
 client = BapXApiClient()
 
-messages = [
-    {
-        "role": "system", 
-        "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."
-    },
-    {
-        "role": "user", 
-        "content": "Hello, how are you?"
-    }
-]
+input_data = {
+    "messages": [
+        {
+            "role": "system",
+            "content": "You are Qwen, a virtual human developed by the Qwen Team, Alibaba Group, capable of perceiving auditory and visual inputs, as well as generating text and speech."
+        },
+        {
+            "role": "user",
+            "content": "Hello, how are you?"
+        }
+    ]
+}
 
-response = client.chat_completion(messages, temperature=0.7)
-print(response['choices'][0]['message']['content'])
+response = client.text_generation(input_data, temperature=0.7, max_tokens=1024)
+print(response['output']['text'])
 ```
 
 ## Official Model Interface
@@ -61,21 +63,21 @@ from transformers import Qwen2_5OmniForConditionalGeneration, Qwen2_5OmniProcess
 import torch
 
 class Qwen25OmniModelInterface:
-    def __init__(self, model_path="/oracle/models/qwen2.5-omni/"):
+    def __init__(self, model_source="https://huggingface.co"):
         """
         Initialize the Qwen2.5-Omni, Qwen2.5-Coder model interface
-        Based on official documentation: 
+        Based on official documentation:
         https://huggingface.co/docs/transformers/main/en/model_doc/qwen2_5_omni
         """
         self.model = Qwen2_5OmniForConditionalGeneration.from_pretrained(
-            model_path,
+            model_source,
             torch_dtype=torch.float16,  # or torch.bfloat16
             device_map="auto",  # Automatically use available GPUs
             # To save ~2GB GPU memory if audio output not needed:
             # enable_audio_output=False
         )
-        self.processor = Qwen2_5OmniProcessor.from_pretrained(model_path)
-        
+        self.processor = Qwen2_5OmniProcessor.from_pretrained(model_source)
+
     def generate_response(self, messages, **generation_kwargs):
         """
         Generate a response using the official model interface
@@ -89,7 +91,7 @@ class Qwen25OmniModelInterface:
             return_tensors="pt",
             padding=True
         ).to(self.model.device)
-        
+
         # Generate response
         with torch.no_grad():
             generated_ids = self.model.generate(
@@ -99,15 +101,15 @@ class Qwen25OmniModelInterface:
                 max_new_tokens=generation_kwargs.get('max_tokens', 1024),
                 use_cache=True
             )
-        
+
         # Decode response
         generated_ids_trimmed = generated_ids[:, inputs['input_ids'].shape[1]:]
         response_text = self.processor.batch_decode(
-            generated_ids_trimmed, 
-            skip_special_tokens=True, 
+            generated_ids_trimmed,
+            skip_special_tokens=True,
             clean_up_tokenization_spaces=False
         )[0]
-        
+
         return response_text
 ```
 
@@ -122,47 +124,47 @@ from pathlib import Path
 
 class SessionManager:
     def __init__(self, project_path):
-        self.project_dir = Path.home() / ".clibapX" / Path(project_path).name
+        self.project_dir = Path.home() / "Client Application Storage (varies by app)" / Path(project_path).name
         self.project_dir.mkdir(parents=True, exist_ok=True)
-        
+
     def save_session_tree(self, session_data):
         """Save conversation history to sessontree.json"""
         with open(self.project_dir / "sessontree.json", "w") as f:
             json.dump(session_data, f, indent=2)
-            
+
     def save_todo_list(self, todo_data):
-        """Save tasks to todo.json""" 
+        """Save tasks to todo.json"""
         with open(self.project_dir / "todo.json", "w") as f:
             json.dump(todo_data, f, indent=2)
-            
+
     def save_rag_storage(self, rag_data):
         """Save RAG data to .rag.json"""
         with open(self.project_dir / ".rag.json", "w") as f:
             json.dump(rag_data, f, indent=2)
-            
+
     def load_project_context(self):
         """Load all project context for API requests"""
         context = {}
-        
+
         # Load session tree if exists
         sessontree_path = self.project_dir / "sessontree.json"
         if sessontree_path.exists():
             with open(sessontree_path, "r") as f:
                 context['session_tree'] = json.load(f)
-                
+
         # Load todo list if exists
         todo_path = self.project_dir / "todo.json"
         if todo_path.exists():
             with open(todo_path, "r") as f:
                 context['todo_list'] = json.load(f)
-                
+
         # Load RAG data if exists
         rag_path = self.project_dir / ".rag.json"
         if rag_path.exists():
             with open(rag_path, "r") as f:
                 context['rag_storage'] = json.load(f)
-                
+
         return context
 ```
 
-This demonstrates how the API connects to the local model using the official implementation pattern, while providing a standardized OpenAI-compatible interface for client applications.
+This demonstrates how the API connects to the remote model using the official implementation pattern, while providing an Alibaba/DashScope-compatible interface for client applications.

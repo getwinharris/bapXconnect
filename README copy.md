@@ -22,8 +22,8 @@ bapXconnect provides a universal API gateway that connects to AI models deployed
 
 ### API Endpoints
 - Base URL: `https://getwinharris.github.io/bapXconnect/api`
-- API Key: Set in `X-DashScope-Token` header
-- Alibaba/DashScope-compatible interface
+- Fixed API Key: `getwinharris.github.io/bapXconnect/api`
+- OpenAI-compatible interface
 - Multimodal support (text, image, audio, video)
 
 ### Model Support
@@ -46,30 +46,24 @@ Each project gets persistent memory in `Client Application Storage (varies by ap
 ## Current Model Deployment
 - Model: Qwen/Qwen2.5-Omni-7B, Qwen/Qwen2.5-Coder-3B via Hugging Face
 - Hosted on Oracle Cloud infrastructure at IP: `152.70.70.254`
-- Accessed through Alibaba-style API format
+- Accessed through Hugging Face inference API format
 - Uses Thinker-Talker architecture for multimodal processing
 
 ## API Usage
 
-### Text Generation (Alibaba/DashScope style)
+### Chat Completions
 ```bash
-curl -X POST https://getwinharris.github.io/bapXconnect/api/api/v1/text/generation \
+curl -X POST https://getwinharris.github.io/bapXconnect/api/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -H "X-DashScope-Token: getwinharris.github.io/bapXconnect/api" \
+  -H "Authorization: Bearer getwinharris.github.io/bapXconnect/api" \
   -d '{
     "model": "qwen2.5-omni",
-    "input": {
-      "messages": [
-        {
-          "role": "user",
-          "content": "Hello, how can you help me?"
-        }
-      ]
-    },
-    "parameters": {
-      "temperature": 0.7,
-      "max_tokens": 1024
-    }
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello, how can you help me?"
+      }
+    ]
   }'
 ```
 
@@ -77,19 +71,15 @@ curl -X POST https://getwinharris.github.io/bapXconnect/api/api/v1/text/generati
 ```bash
 {
   "model": "qwen2.5-omni",
-  "input": {
-    "messages": [
-      {
-        "role": "user",
-        "content": "What is in this image?",
-        "image_url": "data:image/jpeg;base64,..."
-      }
-    ]
-  },
-  "parameters": {
-    "temperature": 0.7,
-    "max_tokens": 1024
-  }
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {"type": "text", "text": "What is in this image?"},
+        {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64,..."}}  
+      ]
+    }
+  ]
 }
 ```
 
@@ -99,11 +89,11 @@ curl -X POST https://getwinharris.github.io/bapXconnect/api/api/v1/text/generati
 - `/ui` - Web interface and admin panel
 
 ## Integration
-Client applications connect to the API using Alibaba/DashScope format with X-DashScope-Token header. The API server handles all connections to the Oracle Cloud infrastructure and Hugging Face models.
+Client applications connect to the API using standard OpenAI format and the fixed API key. The API server handles all connections to the Oracle Cloud infrastructure and Hugging Face models.
 
 ## Security
-- API key authentication via X-DashScope-Token header
-- Individual API keys per client application (admin panel)
+- Fixed API key system for internal use
+- No external key management needed
 - All model connections are handled centrally
 - Project-based session isolation
 

@@ -256,7 +256,7 @@
             <p class="tagline">Universal API Platform for Qwen2.5-Omni and Other AI Models</p>
             <p>Connect to cutting-edge multimodal AI models through a simple API interface</p>
             <div class="hero-buttons">
-                <button class="btn primary-btn" onclick="openDemo()">Try Demo</button>
+                <button class="btn primary-btn" onclick="window.location.href='demo.html'">Try Demo</button>
                 <button class="btn secondary-btn" onclick="showDocs()">View Documentation</button>
             </div>
         </div>
@@ -393,7 +393,7 @@
             
             if (email === 'getwinharris@gmail.com' && password === 'bapX2025#') {
                 // Redirect to admin dashboard
-                window.location.href = 'http://getwinharris.github.io/bapXconnect/admin';
+                window.location.href = 'admin/index.html';
             } else {
                 alert('Invalid credentials');
             }
@@ -405,27 +405,31 @@
                 alert('Please enter a query');
                 return;
             }
-            
+
             const responseDiv = document.getElementById('demo-response');
             responseDiv.innerHTML = 'Processing...';
-            
+
             try {
-                // This would connect to the actual Hugging Face model
-                const response = await fetch(API_BASE + '/v1/chat/completions', {
+                // This would connect to the bapXconnect API using Alibaba/DashScope format
+                const response = await fetch(API_BASE + '/api/v1/text/generation', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer getwinharris.github.io/bapXconnect/api'
+                        'X-DashScope-Token': 'getwinharris.github.io/bapXconnect/api'
                     },
                     body: JSON.stringify({
                         model: selectedModel,
-                        messages: [{role: 'user', content: input}],
-                        temperature: 0.7
+                        input: {
+                            messages: [{role: 'user', content: input}]
+                        },
+                        parameters: {
+                            temperature: 0.7
+                        }
                     })
                 });
-                
+
                 const data = await response.json();
-                responseDiv.innerHTML = data.choices?.[0]?.message?.content || 'No response received';
+                responseDiv.innerHTML = data.output?.text || data.choices?.[0]?.message?.content || 'No response received';
             } catch (error) {
                 responseDiv.innerHTML = 'Error: ' + error.message;
             }

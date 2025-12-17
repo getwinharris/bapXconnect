@@ -4,57 +4,52 @@
 The bapXconnect API provides a standardized interface for client applications to access AI models through a unified endpoint. The API acts as a bridge between client apps and Hugging Face models (currently) or custom bapX models (future).
 
 ## API Interface
-Base URL: `https://getwinharris.github.io/bapXconnect/api/v1`
+Base URL: `https://getwinharris.github.io/bapXconnect/api`
 
-API Key: `getwinharris.github.io/bapXconnect/api`
+API Key Header: `X-DashScope-Token: getwinharris.github.io/bapXconnect/api`
 
 ## Endpoints
 
-### Chat Completions
-`POST /chat/completions`
+### Text Generation
+`POST /api/v1/text/generation`
 
 Request:
 ```json
 {
   "model": "qwen3-omni-30b-a3b-instruct",
-  "messages": [
-    {
-      "role": "user",
-      "content": "Hello, how can you help me?"
-    }
-  ],
-  "temperature": 0.7,
-  "max_tokens": 1024
+  "input": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello, how can you help me?"
+      }
+    ]
+  },
+  "parameters": {
+    "temperature": 0.7,
+    "max_tokens": 1024
+  }
 }
 ```
 
 Response:
 ```json
 {
-  "id": "chat-...",
-  "object": "chat.completion",
-  "created": 1234567890,
-  "model": "qwen3-omni-30b-a3b-instruct",
-  "choices": [
-    {
-      "index": 0,
-      "message": {
-        "role": "assistant",
-        "content": "Response from model"
-      },
-      "finish_reason": "stop"
-    }
-  ],
+  "request_id": "req-...",
+  "output": {
+    "text": "Response from model"
+  },
   "usage": {
     "prompt_tokens": 10,
     "completion_tokens": 50,
-    "total_tokens": 60
+    "total_tokens": 60,
+    "finish_reason": "stop"
   }
 }
 ```
 
 ### List Models
-`GET /models`
+`GET /api/v1/models`
 
 Response:
 ```json
@@ -62,13 +57,13 @@ Response:
   "object": "list",
   "data": [
     {
-      "id": "qwen2.5-omni-local",
+      "id": "qwen2.5-omni",
       "object": "model",
       "created": 1234567890,
       "owned_by": "bapX"
     },
     {
-      "id": "qwen2.5-coder-local", 
+      "id": "qwen2.5-coder",
       "object": "model",
       "created": 1234567890,
       "owned_by": "bapX"
@@ -86,7 +81,7 @@ Response:
 ## Memory & Session Management
 
 ### Session Context
-Each client application manages its own session memory and context. The API accepts conversation history as part of the message array to maintain continuity.
+Each client application manages its own session memory and context. The API accepts conversation history as part of the input to maintain continuity.
 
 ### Local Storage
 Client applications may maintain local session state according to their own implementation. The API does not require or mandate specific local storage approaches.
@@ -104,7 +99,7 @@ Long-term memory and RAG capabilities are provided through bapXvector at https:/
 - Repository: https://github.com/getwinharris/bapXcli
 
 ### Connection Pattern
-Client applications connect to the bapXconnect API endpoint using the standard API key. Each client application manages its own local context and session storage based on its requirements.
+Client applications connect to the bapXconnect API endpoint using the X-DashScope-Token header. Each client application manages its own local context and session storage based on its requirements.
 
 ## Model Access
 - Current: Hugging Face models via bapXconnect API

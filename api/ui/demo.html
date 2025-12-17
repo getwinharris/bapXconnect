@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bapXconnect Demo - Test API Models</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e6e6e6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #4361ee;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #4cc9f0;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #a9d6e5;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .model-selector {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #4361ee;
+            background: rgba(25, 25, 40, 0.8);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .tts-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(76, 201, 240, 0.2);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .chat-container {
+            display: flex;
+            gap: 30px;
+            height: 600px;
+        }
+
+        .chat-history {
+            flex: 1;
+            background: rgba(25, 25, 40, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border: 1px solid #4361ee;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background: rgba(67, 97, 238, 0.3);
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .assistant-message {
+            background: rgba(76, 201, 240, 0.2);
+            align-self: flex-start;
+        }
+
+        .input-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #4361ee;
+            background: rgba(25, 25, 40, 0.8);
+            color: white;
+            resize: vertical;
+            font-size: 1rem;
+        }
+
+        .attachments {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .attachment-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: 1px solid #4cc9f0;
+            background: rgba(76, 201, 240, 0.1);
+            color: #4cc9f0;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .attachment-btn:hover {
+            background: rgba(76, 201, 240, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .primary-btn {
+            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+            color: white;
+            flex: 1;
+        }
+
+        .primary-btn:hover {
+            background: linear-gradient(90deg, #3a0ca3, #7209b7);
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            background: rgba(100, 100, 140, 0.5);
+            color: #a9d6e5;
+            border: 1px solid #4361ee;
+        }
+
+        .secondary-btn:hover {
+            background: rgba(100, 100, 140, 0.8);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #4cc9f0;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .preview-container {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            border: 1px solid #4cc9f0;
+        }
+
+        .model-info {
+            background: rgba(50, 50, 70, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 3px solid #4cc9f0;
+        }
+
+        .api-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="api-status">API Connected</div>
+    
+    <div class="container">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h1>bapXconnect Demo</h1>
+                    <p class="subtitle">Test our API connection with all model abilities</p>
+                </div>
+                <button class="btn secondary-btn" onclick="showAdminLogin()" style="align-self: flex-start;">
+                    <i class="fas fa-lock"></i> Admin Login
+                </button>
+            </div>
+        </div>
+
+        <!-- Admin Login Modal -->
+        <div id="adminModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+            <div style="background-color: #1a1a2e; margin: 10% auto; padding: 30px; border: 2px solid #4cc9f0; border-radius: 10px; width: 300px; color: white; position: relative;">
+                <span onclick="closeAdminModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+                <h3 style="color: #4cc9f0; margin-bottom: 20px;"><i class="fas fa-lock"></i> Admin Login</h3>
+                <div style="margin-bottom: 15px;">
+                    <label>Username:</label>
+                    <input type="text" id="admin-username" style="width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #4361ee; background: rgba(25, 25, 40, 0.8); color: white;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>Password:</label>
+                    <input type="password" id="admin-password" style="width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #4361ee; background: rgba(25, 25, 40, 0.8); color: white;">
+                </div>
+                <button class="btn primary-btn" onclick="adminLogin()" style="width: 100%;"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <div style="margin-top: 15px; font-size: 0.8em; color: #a9d6e5;">
+                    <p>Credentials: getwinharris@gmail.com / bapX2025#</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="model-selector">
+                <label for="model-select">Select Model:</label>
+                <select id="model-select">
+                    <option value="qwen2.5-omni">Qwen2.5-Omni (Multimodal)</option>
+                    <option value="qwen2.5-coder">Qwen2.5-Coder (Code Assistant)</option>
+                    <option value="qwen3-omni-30b-a3b-instruct">Qwen3-Omni-30B-A3B (Advanced Multimodal)</option>
+                </select>
+            </div>
+            
+            <div class="tts-toggle" id="tts-toggle" onclick="toggleTTS()">
+                <span id="tts-label"><i class="fas fa-volume-up"></i> TTS: OFF</span>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-history" id="chat-history">
+                <div class="message assistant-message">
+                    Hello! I'm your AI assistant. Select a model and start chatting to test the bapXconnect API.
+                </div>
+            </div>
+
+            <div class="input-area">
+                <textarea id="user-input" placeholder="Ask anything..."></textarea>
+                
+                <div class="attachments">
+                    <button class="attachment-btn" onclick="document.getElementById('image-upload').click()"><i class="fas fa-image"></i> Upload Image</button>
+                    <button class="attachment-btn" onclick="captureImage()"><i class="fas fa-camera"></i> Camera</button>
+                    <button class="attachment-btn" onclick="document.getElementById('audio-upload').click()"><i class="fas fa-file-audio"></i> Upload Audio</button>
+                    <button class="attachment-btn" onclick="captureAudio()"><i class="fas fa-microphone"></i> Record Audio</button>
+                    <button class="attachment-btn" onclick="document.getElementById('video-upload').click()"><i class="fas fa-file-video"></i> Upload Video</button>
+                    <button class="attachment-btn" onclick="document.getElementById('file-upload').click()"><i class="fas fa-paperclip"></i> General File</button>
+                </div>
+
+                <input type="file" id="image-upload" accept="image/*" style="display: none;" onchange="previewAttachment('image')">
+                <input type="file" id="audio-upload" accept="audio/*" style="display: none;" onchange="previewAttachment('audio')">
+                <input type="file" id="video-upload" accept="video/*" style="display: none;" onchange="previewAttachment('video')">
+                <input type="file" id="file-upload" accept=".txt,.pdf,.doc,.docx" style="display: none;" onchange="previewAttachment('file')">
+
+                <!-- Hidden elements for camera/microphone functionality -->
+                <div id="camera-container" style="display: none; margin-top: 15px;">
+                    <video id="video-element" autoplay playsinline style="width: 100%; max-width: 300px; border-radius: 8px; border: 1px solid #4cc9f0;"></video>
+                    <div style="margin-top: 10px;">
+                        <button class="attachment-btn" onclick="takePicture()"><i class="fas fa-camera"></i> Capture</button>
+                        <button class="attachment-btn" onclick="stopCamera()"><i class="fas fa-times"></i> Cancel</button>
+                    </div>
+                </div>
+
+                <div id="audio-recorder-container" style="display: none; margin-top: 15px;">
+                    <div style="padding: 10px; background: rgba(76, 201, 240, 0.2); border-radius: 5px; margin-bottom: 10px;">
+                        <span id="recording-status"><i class="fas fa-circle" style="color: #ff4757;"></i> Recording...</span>
+                    </div>
+                    <div>
+                        <button class="attachment-btn" onclick="stopRecording()"><i class="fas fa-stop"></i> Stop Recording</button>
+                    </div>
+                </div>
+
+                <div class="preview-container" id="preview-container">
+                    <img id="preview-image" class="preview-image" style="display: none;" alt="Preview">
+                    <div id="preview-text" style="display: none; background: rgba(25, 25, 40, 0.6); padding: 10px; border-radius: 5px; margin-top: 10px;"></div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn primary-btn" onclick="sendRequest()"><i class="fas fa-paper-plane"></i> Send</button>
+                    <button class="btn secondary-btn" onclick="clearChat()"><i class="fas fa-eraser"></i> Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processing your request with the selected model...</p>
+        </div>
+
+        <div class="model-info">
+            <h3>Model Abilities:</h3>
+            <div id="model-abilities">
+                <p><strong>Qwen2.5-Omni:</strong> Multimodal processing (text, image, audio, video) with streaming text and speech output</p>
+                <p><strong>Qwen2.5-Coder:</strong> Specialized coding model with 128K context length, code generation and reasoning</p>
+                <p><strong>Qwen3-Omni-30B-A3B:</strong> Advanced multimodal with 119 text languages, 19 speech input languages, 10 speech output languages</p>
+            </div>
+            <p style="margin-top: 10px;"><strong>API Endpoint:</strong> https://getwinharris.github.io/bapXconnect/api/api/v1/text/generation (connects to Hugging Face models)</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://getwinharris.github.io/bapXconnect/api/api/v1/text/generation';
+        const API_KEY = 'getwinharris.github.io/bapXconnect/api';
+        let currentAttachments = {};
+        let isTTSEnabled = false;
+
+        // Model descriptions for abilities display
+        const modelInfo = {
+            'qwen2.5-omni': {
+                name: 'Qwen2.5-Omni',
+                abilities: 'Multimodal processing (text, image, audio, video) with streaming text and speech output via Thinker-Talker architecture, 32K context length, real-time processing with natural turn-taking, supports Chelsie (female) and Ethan (male) voice options'
+            },
+            'qwen2.5-coder': {
+                name: 'Qwen2.5-Coder',
+                abilities: 'Specialized coding model with 128K context length, code generation, reasoning, fixing and mathematical capabilities, trained on 5.5T tokens, instruction-tuned for conversational assistance'
+            },
+            'qwen3-omni-30b-a3b-instruct': {
+                name: 'Qwen3-Omni-30B-A3B',
+                abilities: 'Advanced multimodal with 119 text languages, 19 speech input languages, 10 speech output languages, Mixture of Experts (MoE) architecture, AuT pretraining, state-of-the-art performance across 36 audio/video benchmarks'
+            }
+        };
+
+        function toggleTTS() {
+            isTTSEnabled = !isTTSEnabled;
+            const label = document.getElementById('tts-label');
+            const toggle = document.getElementById('tts-toggle');
+
+            if (isTTSEnabled) {
+                label.innerHTML = '<i class="fas fa-volume-mute"></i> TTS: ON';
+                toggle.style.background = 'rgba(76, 201, 240, 0.3)';
+                toggle.title = 'TTS enabled: Responses will include audio output when supported by the model';
+            } else {
+                label.innerHTML = '<i class="fas fa-volume-up"></i> TTS: OFF';
+                toggle.style.background = 'rgba(76, 201, 240, 0.2)';
+                toggle.title = 'TTS disabled: Responses will be text only';
+            }
+        }
+
+        function previewAttachment(type) {
+            const fileInput = document.getElementById(`${type}-upload`);
+            if (!fileInput.files || !fileInput.files[0]) return;
+
+            const file = fileInput.files[0];
+            const previewContainer = document.getElementById('preview-container');
+            const previewImage = document.getElementById('preview-image');
+            const previewText = document.getElementById('preview-text');
+
+            if (type === 'image') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                    previewText.style.display = 'none';
+                    previewContainer.style.display = 'block';
+                    currentAttachments.image = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else if (type === 'audio') {
+                previewText.textContent = `Audio file attached: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                previewText.style.display = 'block';
+                previewImage.style.display = 'none';
+                previewContainer.style.display = 'block';
+                currentAttachments.audio = URL.createObjectURL(file);
+            } else if (type === 'video') {
+                previewText.textContent = `Video file attached: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                previewText.style.display = 'block';
+                previewImage.style.display = 'none';
+                previewContainer.style.display = 'block';
+                currentAttachments.video = URL.createObjectURL(file);
+            } else if (type === 'file') {
+                previewText.textContent = `File attached: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                previewText.style.display = 'block';
+                previewImage.style.display = 'none';
+                previewContainer.style.display = 'block';
+                currentAttachments.file = file;
+            }
+        }
+
+        function clearChat() {
+            document.getElementById('chat-history').innerHTML = 
+                '<div class="message assistant-message">Hello! I\'m your AI assistant. Select a model and start chatting to test the bapXconnect API.</div>';
+            document.getElementById('user-input').value = '';
+            document.getElementById('preview-container').style.display = 'none';
+            document.getElementById('preview-image').style.display = 'none';
+            document.getElementById('preview-text').style.display = 'none';
+            currentAttachments = {};
+        }
+
+        async function sendRequest() {
+            const input = document.getElementById('user-input').value;
+            const model = document.getElementById('model-select').value;
+            const chatHistory = document.getElementById('chat-history');
+            const loadingDiv = document.getElementById('loading');
+
+            if (!input.trim()) {
+                alert('Please enter a message');
+                return;
+            }
+
+            // Add user message to chat
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user-message';
+            userMessage.textContent = input;
+            chatHistory.appendChild(userMessage);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            // Show loading indicator
+            loadingDiv.style.display = 'block';
+
+            try {
+                // Prepare messages array
+                let messages = [];
+                
+                // Get all existing messages in chat history
+                const existingMessages = document.querySelectorAll('.message');
+                for (let i = 0; i < existingMessages.length - 1; i++) { // -1 to exclude last user message
+                    const msgEl = existingMessages[i];
+                    if (msgEl.classList.contains('user-message')) {
+                        messages.push({ role: 'user', content: msgEl.textContent });
+                    } else if (msgEl.classList.contains('assistant-message')) {
+                        messages.push({ role: 'assistant', content: msgEl.textContent });
+                    }
+                }
+                
+                // Add current user message
+                let userContent;
+                if (Object.keys(currentAttachments).length > 0) {
+                    userContent = [{ type: 'text', text: input }];
+                    
+                    if (currentAttachments.image) {
+                        userContent.push({
+                            type: 'image_url',
+                            image_url: { url: currentAttachments.image }
+                        });
+                    }
+                    
+                    if (currentAttachments.audio) {
+                        userContent.push({
+                            type: 'audio_url', 
+                            audio_url: { url: currentAttachments.audio }
+                        });
+                    }
+                    
+                    if (currentAttachments.video) {
+                        userContent.push({
+                            type: 'video_url',
+                            video_url: { url: currentAttachments.video }
+                        });
+                    }
+                    
+                    messages.push({
+                        role: 'user',
+                        content: userContent
+                    });
+                } else {
+                    messages.push({
+                        role: 'user', 
+                        content: input
+                    });
+                }
+
+                // Prepare the request in Alibaba/DashScope format
+                const requestBody = {
+                    model: model,
+                    input: {
+                        messages: messages
+                    },
+                    parameters: {
+                        temperature: 0.7,
+                        max_tokens: 1500
+                    }
+                };
+
+                // Add TTS parameter if enabled
+                if (isTTSEnabled && model.includes('omni')) {
+                    requestBody.parameters.use_audio_output = true;
+                }
+
+                // Send request to bapXconnect API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-DashScope-Token': API_KEY
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // Add assistant response to chat
+                const assistantMessage = document.createElement('div');
+                assistantMessage.className = 'message assistant-message';
+
+                // In Alibaba/DashScope format, response is in data.output.text
+                const content = data.output?.text || data.choices?.[0]?.message?.content || 'No response from model';
+                assistantMessage.textContent = content;
+
+                chatHistory.appendChild(assistantMessage);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+
+                // Update model abilities display
+                updateModelAbilities(model);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'message assistant-message';
+                errorMessage.textContent = `Error: ${error.message}`;
+                chatHistory.appendChild(errorMessage);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            } finally {
+                loadingDiv.style.display = 'none';
+                
+                // Clear attachments after sending
+                document.getElementById('preview-container').style.display = 'none';
+                document.getElementById('preview-image').style.display = 'none';
+                document.getElementById('preview-text').style.display = 'none';
+                currentAttachments = {};
+            }
+        }
+
+        // Camera and microphone functionality
+        let mediaStream = null;
+        let audioChunks = [];
+        let mediaRecorder = null;
+
+        function captureImage() {
+            const videoElement = document.getElementById('video-element');
+            const cameraContainer = document.getElementById('camera-container');
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    mediaStream = stream;
+                    videoElement.srcObject = stream;
+                    document.querySelector('.input-area').appendChild(cameraContainer);
+                    cameraContainer.style.display = 'block';
+                })
+                .catch(err => {
+                    console.error('Error accessing camera:', err);
+                    alert('Could not access camera. Please ensure you have granted permission.');
+                });
+        }
+
+        function takePicture() {
+            const videoElement = document.getElementById('video-element');
+            const canvas = document.createElement('canvas');
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(videoElement, 0, 0);
+
+            // Convert to data URL and store as attachment
+            const imageDataUrl = canvas.toDataURL('image/jpeg');
+            currentAttachments.image = imageDataUrl;
+
+            // Show preview
+            const previewContainer = document.getElementById('preview-container');
+            const previewImage = document.getElementById('preview-image');
+            previewImage.src = imageDataUrl;
+            previewImage.style.display = 'block';
+            document.getElementById('preview-text').style.display = 'none';
+            previewContainer.style.display = 'block';
+
+            stopCamera();
+        }
+
+        function stopCamera() {
+            if (mediaStream) {
+                const tracks = mediaStream.getTracks();
+                tracks.forEach(track => track.stop());
+                mediaStream = null;
+            }
+            document.getElementById('camera-container').style.display = 'none';
+        }
+
+        function captureAudio() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        currentAttachments.audio = audioUrl;
+
+                        // Show preview
+                        document.getElementById('preview-text').textContent = 'Audio recording attached (will be sent with next message)';
+                        document.getElementById('preview-text').style.display = 'block';
+                        document.getElementById('preview-image').style.display = 'none';
+                        document.getElementById('preview-container').style.display = 'block';
+
+                        // Stop all tracks
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    mediaRecorder.start();
+                    document.getElementById('audio-recorder-container').style.display = 'block';
+                    document.getElementById('recording-status').textContent = '🔴 Recording...';
+                })
+                .catch(err => {
+                    console.error('Error accessing microphone:', err);
+                    alert('Could not access microphone. Please ensure you have granted permission.');
+                });
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                document.getElementById('audio-recorder-container').style.display = 'none';
+                document.getElementById('recording-status').textContent = 'Recording finished';
+            }
+        }
+
+        function updateModelAbilities(model) {
+            const abilitiesDiv = document.getElementById('model-abilities');
+            if (modelInfo[model]) {
+                abilitiesDiv.innerHTML = `<p><strong>${modelInfo[model].name}:</strong> ${modelInfo[model].abilities}</p>`;
+            }
+        }
+
+        function showAdminLogin() {
+            document.getElementById('adminModal').style.display = 'block';
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+
+        function adminLogin() {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+
+            if (username === 'getwinharris@gmail.com' && password === 'bapX2025#') {
+                alert('Admin login successful! Redirecting to admin panel...');
+                // In a real implementation, this would redirect to admin panel
+                window.open('admin/index.html', '_blank');
+                closeAdminModal();
+            } else {
+                alert('Invalid admin credentials');
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('adminModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Update model abilities when model selection changes
+        document.getElementById('model-select').addEventListener('change', function() {
+            const selectedModel = this.value;
+            updateModelAbilities(selectedModel);
+        });
+
+        // Allow Enter to send (with Shift+Enter for new line)
+        document.getElementById('user-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendRequest();
+            }
+        });
+
+        // Initialize with default model abilities
+        window.onload = function() {
+            updateModelAbilities('qwen2.5-omni');
+        };
+    </script>
+</body>
+</html>

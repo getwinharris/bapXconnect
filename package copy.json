@@ -1,19 +1,18 @@
 {
-  "name": "@bapx-code/bapxconnect",
+  "name": "@bapx-code/bapx-code",
   "version": "0.5.1",
-  "description": "bapX - Universal AI Model API Gateway",
+  "description": "bapX - Local Qwen2.5-Omni Model Integration",
   "keywords": [
     "ai",
     "multimodal",
     "qwen",
     "qwen2.5-omni",
-    "api-gateway",
-    "alibaba-cloud",
-    "dashscope"
+    "local-ai",
+    "api"
   ],
-  "homepage": "https://getwinharris.github.io/bapXconnect",
+  "homepage": "https://getwinharris.github.io/bapXcoder",
   "bugs": {
-    "url": "https://github.com/getwinharris/bapXconnect/issues"
+    "url": "https://github.com/getwinharris/bapXcli/issues"
   },
   "license": "Apache-2.0",
   "author": "getwinharris",
@@ -22,7 +21,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "bapxconnect": "dist/cli.js"
+    "cli.bapx": "dist/cli.js"
   },
   "scripts": {
     "start": "node startLocalApi.js",
@@ -50,6 +49,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/getwinharris/bapXconnect.git"
+    "url": "https://github.com/getwinharris/bapXcli.git"
   }
 }

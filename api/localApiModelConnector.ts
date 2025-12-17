@@ -9,41 +9,45 @@ import type { ContentGenerator, ContentGeneratorConfig } from '../core/contentGe
 import type { Config } from '../config/config.js';
 
 /**
- * Local API-based model connector for connecting to Harris's local API server
- * This connects to the local API that interfaces with the Qwen2.5-Omni model running on Harris's machine
+ * bapX API connector for connecting to the bapXconnect API server
+ * This connects to the centralized API that interfaces with Hugging Face models and future bapX models
  */
-export class LocalApiModelConnector implements ContentGenerator {
+export class BapXApiConnector implements ContentGenerator {
   private apiUrl: string;
   private apiKey: string;
 
   constructor(private config: ContentGeneratorConfig, private cliConfig: Config) {
-    // Use the local API URL for testing on Harris's machine
-    this.apiUrl = config.baseUrl || 'http://localhost:8080';
-    this.apiKey = config.apiKey || 'local-test-key'; // Local testing key
+    // Use the bapX API URL
+    this.apiUrl = config.baseUrl || 'https://getwinharris.github.io/bapXconnect/api';
+    this.apiKey = config.apiKey || 'getwinharris.github.io/bapXconnect/api'; // Default API key
   }
 
   async generateContent(
     request: any,
     userPromptId: string,
   ): Promise<GenerateContentResponse> {
-    console.log(`[LocalApiModelConnector] Generating content via local API: ${this.apiUrl}`);
-    
+    console.log(`[BapXApiConnector] Generating content via bapX API: ${this.apiUrl}`);
+
     try {
-      // Format the request to match OpenAI-compatible API format
-      const messages = this.formatMessages(request);
-      
+      // Format the request to match bapX/DashScope API format
+      const input = this.formatInput(request);
+
+      // Use Alibaba/DashScope style parameters
       const apiRequest = {
-        model: this.config.model || 'qwen2.5-omni-local',
-        messages: messages,
-        temperature: this.config.samplingParams?.temperature || 0.7,
-        max_tokens: this.config.samplingParams?.max_tokens || 1024,
+        model: this.config.model || 'qwen2.5-omni',
+        input: input,
+        parameters: {
+          temperature: this.config.samplingParams?.temperature || 0.7,
+          top_p: this.config.samplingParams?.top_p || 0.8,
+          max_tokens: this.config.samplingParams?.max_tokens || 1024,
+        }
       };
 
-      const response = await fetch(`${this.apiUrl}/v1/chat/completions`, {
+      const response = await fetch(`${this.apiUrl}/api/v1/text/generation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
+          'X-DashScope-Token': this.apiKey, // Alibaba-style API key header
           'User-Agent': 'bapXcli/1.0'
         },
         body: JSON.stringify(apiRequest)
@@ -54,63 +58,68 @@ export class LocalApiModelConnector implements ContentGenerator {
       }
 
       const data = await response.json();
-      
+
       // Format the response to match the expected interface
       return this.formatApiResponse(data);
     } catch (error) {
-      console.error('[LocalApiModelConnector] Error generating content:', error);
+      console.error('[BapXApiConnector] Error generating content:', error);
       throw error;
     }
   }
 
-  private formatMessages(request: any): Array<{role: string, content: string | any}> {
-    // Convert the Gemini format to OpenAI format
+  private formatInput(request: any): any {
+    // Convert the Gemini format to bapX/DashScope format
     if (request.contents) {
-      return request.contents.map((content: any) => {
-        let textContent = '';
-        
-        if (content.parts) {
-          // Handle both text and multimodal parts
-          content.parts.forEach((part: any) => {
-            if (part.text) {
-              textContent += part.text;
-            } else if (part.inlineData) {
-              // Handle image/data parts
-              textContent += `[Image attached: ${part.inlineData.mimeType}]`;
-            }
-          });
-        }
-        
-        return {
-          role: content.role === 'model' ? 'assistant' : content.role || 'user',
-          content: textContent
-        };
-      });
+      // Convert messages to input format expected by bapX API
+      return {
+        messages: request.contents.map((content: any) => {
+          let textContent = '';
+
+          if (content.parts) {
+            // Handle both text and multimodal parts
+            content.parts.forEach((part: any) => {
+              if (part.text) {
+                textContent += part.text;
+              } else if (part.inlineData) {
+                // Handle image/data parts
+                textContent += `[Image attached: ${part.inlineData.mimeType}]`;
+              }
+            });
+          }
+
+          return {
+            role: content.role === 'model' ? 'assistant' : content.role || 'user',
+            content: textContent
+          };
+        })
+      };
     }
-    
+
     // Fallback
-    return [{ role: 'user', content: request.prompt || request.text || 'Hello' }];
+    return {
+      messages: [{ role: 'user', content: request.prompt || request.text || 'Hello' }]
+    };
   }
 
   private formatApiResponse(apiResponse: any): GenerateContentResponse {
-    // Format API response to match the expected Gemini SDK interface
-    const firstChoice = apiResponse.choices?.[0];
-    
+    // Format bapX API response to match the expected Gemini SDK interface
+    const text = apiResponse.output?.text || apiResponse.result?.response || 'No response from model';
+
     return {
       response: {
-        text: () => firstChoice?.message?.content || 'No response from model',
+        text: () => text,
         functionCalls: () => [],
         functionCall: () => undefined,
         candidates: [{
           content: {
             role: 'model',
             parts: [
-              { 
-                text: firstChoice?.message?.content || 'No response from model'
+              {
+                text: text
               }
             ]
           },
-          finishReason: firstChoice?.finish_reason || 'stop',
+          finishReason: apiResponse.usage?.finish_reason || 'stop',
           index: 0,
           safetyRatings: [],
         }],
@@ -140,17 +149,17 @@ export class LocalApiModelConnector implements ContentGenerator {
 
   async countTokens(request: any): Promise<any> {
     try {
-      const messages = this.formatMessages(request);
-      
-      const response = await fetch(`${this.apiUrl}/v1/chat/tokenize`, {
+      const input = this.formatInput(request);
+
+      const response = await fetch(`${this.apiUrl}/api/v1/text/tokenize`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`
+          'X-DashScope-Token': this.apiKey
         },
         body: JSON.stringify({
-          model: this.config.model || 'qwen2.5-omni-local',
-          messages: messages
+          model: this.config.model || 'qwen2.5-omni',
+          input: input
         })
       });
 
@@ -160,16 +169,16 @@ export class LocalApiModelConnector implements ContentGenerator {
 
       const data = await response.json();
       return {
-        totalTokens: data.count || 0
+        totalTokens: data.count || data.usage?.total_tokens || 0
       };
     } catch (error) {
-      console.error('[LocalApiModelConnector] Error counting tokens:', error);
+      console.error('[BapXApiConnector] Error counting tokens:', error);
       return { totalTokens: 0 };
     }
   }
 
   async embedContent(request: any): Promise<any> {
-    // Embedding would be handled by the API server
+    // Embedding would be handled by the bapX API server
     // For now return a placeholder
     return {
       embedding: {
@@ -180,11 +189,11 @@ export class LocalApiModelConnector implements ContentGenerator {
 }
 
 /**
- * Create a local API-based content generator that connects to Harris's local API server
+ * Create a bapX API-based content generator that connects to the centralized bapX API server
  */
-export async function createLocalApiContentGenerator(
+export async function createBapXApiContentGenerator(
   config: ContentGeneratorConfig,
   cliConfig: Config,
 ): Promise<ContentGenerator> {
-  return new LocalApiModelConnector(config, cliConfig);
+  return new BapXApiConnector(config, cliConfig);
 }

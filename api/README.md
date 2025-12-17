@@ -1,36 +1,44 @@
 # bapXconnect API Server
 
-This is the API server for the bapXconnect project that interfaces with the Qwen2.5-Omni, Qwen2.5-Coder model and other AI models deployed on Oracle Cloud infrastructure.
+This is the API server for the bapXconnect project that interfaces with the Qwen2.5-Omni, Qwen2.5-Coder, and Qwen3-Omni-30B-A3B-Instruct models deployed on Oracle Cloud infrastructure.
 
 ## Overview
 
 The bapXconnect API provides a unified interface to multiple AI models:
 
-1. **Qwen2.5-Omni, Qwen2.5-Coder** - Primary multimodal model (text, image, audio, video)
-2. **Qwen2.5-Coder** - Specialized coding model
-3. **Custom models** - Additional models deployed on Oracle Cloud
+1. **Qwen2.5-Omni** - Primary multimodal model supporting text, image, audio, and video inputs with text and speech outputs via its Thinker-Talker architecture
+2. **Qwen2.5-Coder** - Specialized coding model supporting 5+ trillion tokens of training data, 128K context length, and enhanced capabilities for code generation, reasoning, and fixing
+3. **Qwen3-Omni-30B-A3B-Instruct** - Advanced multimodal model with Mixture of Experts (MoE) architecture, supporting 119 text languages, 19 speech input languages, and 10 speech output languages
 
 All models connect through Hugging Face endpoints and are hosted on Oracle Cloud at IP: `152.70.70.254`
 
 ## Features
 
-- OpenAI-compatible API interface
+- Alibaba/DashScope-compatible API interface
 - Multimodal input support (text, image, audio, video)
 - Per-client application session storage
 - API key management via admin panel
 - Model selection per API key
 - Continuous conversation memory
+- Real-time streaming responses
+- Multiple voice options (Chelsie female, Ethan male voices)
 
 ## API Endpoints
 
 ### Base URL
-`https://getwinharris.github.io/bapXconnect/api/v1`
+`https://getwinharris.github.io/bapXconnect/api`
 
 ### Authentication
-Fixed API key: `getwinharris.github.io/bapXconnect/api`
+API Key Header: `X-DashScope-Token: getwinharris.github.io/bapXconnect/api`
 
-### Chat Completions
-`POST /v1/chat/completions` - Main endpoint for all model interactions
+### Text Generation
+`POST /api/v1/text/generation` - Main endpoint for all model interactions
+
+### Model Information
+`GET /api/v1/models` - List available models
+
+### Token Counting
+`POST /api/v1/text/tokenize` - Count tokens in input
 
 ## Architecture
 
@@ -65,4 +73,4 @@ Admins can generate API keys through the admin panel:
 
 - `index.html` - Public facing API information and documentation
 - `admin/index.html` - Administrative panel for key generation and model selection
-- `demos/qwen-demo.html` - Interactive demo for Qwen2.5-Omni, Qwen2.5-Coder model
+- `demo.html` - Unified interactive demo for testing all models with one interface

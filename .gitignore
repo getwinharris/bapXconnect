@@ -8,3 +8,4 @@ weights/
 .tensor
 !api/
 !model/README.md
+model/

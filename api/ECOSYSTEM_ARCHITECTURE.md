@@ -10,7 +10,7 @@ The bapX ecosystem consists of multiple interconnected applications that work to
 - Fixed API key: getwinharris.github.io/bapXconnect/api
 - Acts as a bridge between client applications and AI models
 - Current integration: Hugging Face models (Qwen2.5-Omni, Qwen2.5-Coder, Qwen3-Omni)
-- Future integration: bapX server models at 152.70.70.254
+- Future integration: bapX server models
 
 ### Client Applications (Local Runtime)
 
@@ -63,7 +63,7 @@ The bapX platform provides:
 Client Apps → bapXconnect API → Hugging Face Models
 
 ### Future (bapX Server Integration)  
-Client Apps → bapXconnect API → bapX Server (152.70.70.254) → Custom Trained Models
+Client Apps → bapXconnect API → bapX Server → Custom Trained Models
 
 ## API Flow
 1. Client applications connect to bapXconnect API using the fixed API key

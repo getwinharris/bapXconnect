@@ -24,7 +24,7 @@ The bapXconnect project is divided into two main components:
 ### API Connection Details
 - Base URL: `https://getwinharris.github.io/bapXcoder/api`
 - API Key: `getwinharris.github.io/bapXcoder/api`
-- Model endpoint connects to Oracle Cloud at `152.70.70.254`
+- Model endpoint connects to Hugging Face endpoints
 - Uses Hugging Face models: Qwen/Qwen2.5-Omni-7B
 
 ## Model Integration (`/model` folder)
@@ -39,7 +39,7 @@ The bapXconnect project is divided into two main components:
 - Qwen2.5-Omni model (7B parameters for text processing)
 - Multimodal capabilities (text, image, audio, video)
 - Thinker-Talker architecture
-- Hosted on Oracle Cloud infrastructure at `152.70.70.254`
+- Hosted via Hugging Face endpoints
 
 ## Project Integration
 
@@ -60,7 +60,7 @@ The bapXconnect project is divided into two main components:
 ### API Server
 - OpenAI-compatible interface
 - Connects to Hugging Face models
-- Runs on Oracle Cloud infrastructure
+- Runs via Hugging Face endpoints
 - Supports multimodal inputs and responses
 
 ### Client Integration
@@ -70,4 +70,4 @@ The bapXconnect project is divided into two main components:
 - Handles response streaming
 
 ## Deployment
-The API server is designed to be deployed on Oracle Cloud with models running on the same infrastructure, providing low-latency access to the Qwen2.5-Omni model through a standardized API interface.
+The API server connects to Hugging Face models, providing access to the Qwen2.5-Omni model through a standardized API interface.

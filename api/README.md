@@ -1,6 +1,6 @@
 # bapXconnect API Server
 
-This is the API server for the bapXconnect project that interfaces with the Qwen2.5-Omni, Qwen2.5-Coder, and Qwen3-Omni-30B-A3B-Instruct models deployed on Oracle Cloud infrastructure.
+This is the API server for the bapXconnect project that interfaces with the Qwen2.5-Omni, Qwen2.5-Coder, and Qwen3-Omni-30B-A3B-Instruct models via Hugging Face endpoints.
 
 ## Overview
 
@@ -10,7 +10,7 @@ The bapXconnect API provides a unified interface to multiple AI models:
 2. **Qwen2.5-Coder** - Specialized coding model supporting 5+ trillion tokens of training data, 128K context length, and enhanced capabilities for code generation, reasoning, and fixing
 3. **Qwen3-Omni-30B-A3B-Instruct** - Advanced multimodal model with Mixture of Experts (MoE) architecture, supporting 119 text languages, 19 speech input languages, and 10 speech output languages
 
-All models connect through Hugging Face endpoints and are hosted on Oracle Cloud at IP: `152.70.70.254`
+All models connect through Hugging Face endpoints.
 
 ## Features
 
@@ -50,9 +50,8 @@ API Key Header: `X-DashScope-Token: getwinharris.github.io/bapXconnect/api`
                                              │
                                              ▼
                                     ┌─────────────────┐
-                                    │ Oracle Cloud    │
+                                    │ Cloud           │
                                     │  Infrastructure │
-                                    │  152.70.70.254  │
                                     └─────────────────┘
 ```
 

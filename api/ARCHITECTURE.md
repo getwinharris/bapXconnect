@@ -1,7 +1,7 @@
 # bapXconnect API Architecture
 
 ## Overview
-The bapXconnect API acts as a bridge between client applications and Hugging Face models. In the future, it will connect to the bapX server at 152.70.70.254, but currently connects to Hugging Face endpoints while models are in training phase.
+The bapXconnect API acts as a bridge between client applications and Hugging Face models. In the future, it will connect to custom bapX server models, but currently connects to Hugging Face endpoints.
 
 ## Current Architecture
 ```
@@ -45,9 +45,9 @@ Each client application manages its own session storage:
 ```
 ┌─────────────────┐    HTTP/S     ┌─────────────────┐    HTTPS    ┌─────────────────┐
 │   Client Apps   │ ─────────────▶ │  bapXconnect   │ ──────────▶ │ bapX Server    │
-│ (bapXcli, etc.) │               │    API         │             │ 152.70.70.254  │
-│ (on user device)│               │  (GitHub Pages) │             │ (Custom Models)│
-└─────────────────┘               └─────────────────┘             └─────────────────┘
+│ (bapXcli, etc.) │               │    API         │             │ (Custom Models)│
+│ (on user device)│               │  (GitHub Pages) │             └─────────────────┘
+└─────────────────┘               └─────────────────┘
         │                                    │                              │
         ▼                                    ▼                              ▼
 ┌─────────────────┐               ┌─────────────────┐              ┌─────────────────┐
@@ -64,7 +64,7 @@ Each client application manages its own session storage:
 - Qwen3-Omni: `https://api-inference.huggingface.co/models/Qwen/Qwen3-Omni-30B-A3B-Instruct`
 
 ### Future (bapX Server)
-- Custom trained Qwen models at `https://152.70.70.254/models/`
+- Custom trained Qwen models at bapX server
 - Same API interface as Hugging Face endpoints
 - Optimized for specific use cases
 

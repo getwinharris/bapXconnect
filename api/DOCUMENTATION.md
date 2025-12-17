@@ -61,7 +61,7 @@ Fixed API key: `getwinharris.github.io/bapXcoder/api`
 
 The API connects to models hosted on Hugging Face:
 - Qwen2.5-Omni, Qwen2.5-Coder: `@huggingface/qwen/models` (specifically `Qwen/Qwen2.5-Omni, Qwen2.5-Coder-7B`)
-- Models are deployed on Oracle Cloud infrastructure at IP: `152.70.70.254`
+- Models are accessed via Hugging Face endpoints
 
 ## Session Management
 Each project gets its own session storage in `Client Application Storage (varies by app)/` with:

@@ -103,7 +103,7 @@ Client applications connect to the bapXconnect API endpoint using the X-DashScop
 
 ## Model Access
 - Current: Hugging Face models via bapXconnect API
-- Future: Custom bapX models at server 152.70.70.254
+- Future: Custom bapX models
 
 ## Admin Panel
 - URL: https://getwinharris.github.io/bapXconnect/admin

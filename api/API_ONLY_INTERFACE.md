@@ -101,7 +101,7 @@ Fixed API Key: `getwinharris.github.io/bapXconnect/api`
 
 ## Model Routing
 Currently routes to Hugging Face endpoints.
-Future: Routes to bapX server at 152.70.70.254
+Future: Routes to bapX server
 
 ## Rate Limits
 - Unlimited (for internal use)

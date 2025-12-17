@@ -60,10 +60,10 @@ const API_CONFIG = {
 - Copy functionality for generated API keys
 
 ## Current Flow
-Client Apps → bapXconnect API → Hugging Face Models (temporarily)
+Client Apps → bapXconnect API → Hugging Face Models
 
 ## Future Flow
-Client Apps → bapXconnect API → bapX Server at 152.70.70.254 (custom models)
+Client Apps → bapXconnect API → bapX Server (custom models)
 
 ## Client Application Examples
 

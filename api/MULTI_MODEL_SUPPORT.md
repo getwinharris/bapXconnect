@@ -33,7 +33,7 @@ The bapXconnect API supports multiple models with separate endpoints:
   - Real-time streaming with natural turn-taking
   - AuT pretraining for enhanced general representations
 
-All models connect to Oracle Cloud infrastructure at 152.70.70.254 and accessed via the same API structure:
+All models connect via Hugging Face endpoints and accessed via the same API structure:
 - Base URL: https://getwinharris.github.io/bapXconnect/api
 - Auth: X-DashScope-Token getwinharris.github.io/bapXconnect/api
 - Models endpoint: /api/v1/models

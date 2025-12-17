@@ -1,7 +1,7 @@
 # bapXconnect - Universal AI Model API Gateway
 
 ## Overview
-bapXconnect provides a universal API gateway that connects to AI models deployed on Oracle Cloud infrastructure. The system currently interfaces with the Qwen2.5-Omni multimodal model via Hugging Face endpoints, with plans to expand to multiple models.
+bapXconnect provides a universal API gateway that connects to AI models via Hugging Face endpoints, with plans to expand to multiple models.
 
 ## Architecture
 ```
@@ -12,9 +12,8 @@ bapXconnect provides a universal API gateway that connects to AI models deployed
                                               │
                                               ▼
                                    ┌─────────────────┐
-                                   │ Oracle Cloud    │
+                                   │ Cloud           │
                                    │  Infrastructure │
-                                   │  152.70.70.254  │
                                    └─────────────────┘
 ```
 
@@ -45,7 +44,7 @@ Each project gets persistent memory in `Client Application Storage (varies by ap
 
 ## Current Model Deployment
 - Model: Qwen/Qwen2.5-Omni-7B, Qwen/Qwen2.5-Coder-3B via Hugging Face
-- Hosted on Oracle Cloud infrastructure at IP: `152.70.70.254`
+- Hosted via Hugging Face endpoints
 - Accessed through Hugging Face inference API format
 - Uses Thinker-Talker architecture for multimodal processing
 
@@ -76,7 +75,7 @@ curl -X POST https://getwinharris.github.io/bapXconnect/api/v1/chat/completions 
       "role": "user",
       "content": [
         {"type": "text", "text": "What is in this image?"},
-        {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64,..."}}  
+        {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64,..."}} 
       ]
     }
   ]
@@ -89,7 +88,7 @@ curl -X POST https://getwinharris.github.io/bapXconnect/api/v1/chat/completions 
 - `/ui` - Web interface and admin panel
 
 ## Integration
-Client applications connect to the API using standard OpenAI format and the fixed API key. The API server handles all connections to the Oracle Cloud infrastructure and Hugging Face models.
+Client applications connect to the API using standard OpenAI format and the fixed API key. The API server handles all connections to Hugging Face models.
 
 ## Security
 - Fixed API key system for internal use

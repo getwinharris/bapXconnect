@@ -1,113 +1,47 @@
-# bapXconnect - Universal AI Model API Gateway
+# bapXconnect API Gateway Sandbox
 
-## Overview
-bapXconnect provides a universal API gateway that connects to AI models via Hugging Face endpoints, with plans to expand to multiple models.
+This is a minimal server that runs in GitHub cloud environments (like GitHub Codespaces) to serve as an API gateway connecting to Hugging Face models for your ecosystem of client applications.
 
-## Architecture
-```
-┌─────────────────┐    HTTP/S     ┌─────────────────┐    HTTPS    ┌─────────────────┐
-│   Client Apps   │ ─────────────▶ │  bapXconnect   │ ──────────▶ │ Hugging Face   │
-│ (bapXcli, etc.) │               │    API         │             │    Models      │
-└─────────────────┘               └─────────────────┘             └─────────────────┘
-                                              │
-                                              ▼
-                                   ┌─────────────────┐
-                                   │ Cloud           │
-                                   │  Infrastructure │
-                                   └─────────────────┘
-```
+## Purpose
+- Replace external APIs (OpenAI, Google models) with your own API gateway
+- Connect to Hugging Face models for minimal cost
+- Serve as the main API gateway for all bapX client applications
+- Run directly in GitHub's cloud infrastructure
 
-## Key Features
+## Features
+- Connects to Hugging Face models: Qwen3, Qwen2.5, Llama3
+- Alibaba/DashScope compatible API format
+- Token counting and model listing
+- Built-in UI for testing
+- CORS-enabled for browser applications
 
-### API Endpoints
-- Base URL: `https://getwinharris.github.io/bapXconnect/api`
-- API Key: Set in `X-DashScope-Token` header
-- Alibaba/DashScope-compatible interface
-- Multimodal support (text, image, audio, video)
+## Setup for GitHub Codespaces
 
-### Model Support
-- Primary: Qwen2.5-Omni (multimodal model)
-- Secondary: Qwen2.5-Coder (code-specific model)
-- Expandable to other Hugging Face models
+1. Open this repository in GitHub Codespaces
+2. Install dependencies: `npm install`
+3. Set your Hugging Face API token: `export HF_API_TOKEN="your_token_here"`
+4. Start the server: `npm start`
+5. The server will be available on port 3000
 
-### Session Management
-Each project gets persistent memory in `Client Application Storage (varies by app)/`:
-- `sessontree.json` - conversation history with UUIDs and parent-child relationships
-- `todo.json` - task management with context tracking
-- `.rag.json` - retrieval-augmented generation knowledge base
+## API Endpoints
+- `POST /api/v1/text/generation` - Main text generation endpoint
+- `GET /api/v1/models` - List available models  
+- `POST /api/v1/text/tokenize` - Token counting
+- `GET /health` - Health check
 
-### Admin Panel
-- URL: `http://getwinharris.github.io/bapXconnect/admin`
-- Login: getwinharris@gmail.com / bapX2025#
-- API key generation with model selection
-- Model configuration management
+## Authentication
+Use API key in header: `X-DashScope-Token: getwinharris.github.io/bapXconnect/api`
 
-## Current Model Deployment
-- Model: Qwen/Qwen3-Omni-30B-A3B-Instruct, Qwen/Qwen2.5-Omni-7B, Qwen/Qwen2.5-Coder-3B via Hugging Face
-- Hosted via Hugging Face: https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct/tree/main
-- Accessed through Alibaba-style API format
-- Uses Thinker-Talker architecture for multimodal processing
+## Supported Models
+- qwen3-omni-30b-a3b-instruct
+- qwen2.5-omni
+- qwen2.5-coder
+- llama3
 
-## API Usage
-
-### Text Generation (Alibaba/DashScope style)
-```bash
-curl -X POST https://getwinharris.github.io/bapXconnect/api/api/v1/text/generation \
-  -H "Content-Type: application/json" \
-  -H "X-DashScope-Token: getwinharris.github.io/bapXconnect/api" \
-  -d '{
-    "model": "qwen2.5-omni",
-    "input": {
-      "messages": [
-        {
-          "role": "user",
-          "content": "Hello, how can you help me?"
-        }
-      ]
-    },
-    "parameters": {
-      "temperature": 0.7,
-      "max_tokens": 1024
-    }
-  }'
-```
-
-### With Image Input
-```bash
-{
-  "model": "qwen2.5-omni",
-  "input": {
-    "messages": [
-      {
-        "role": "user",
-        "content": "What is in this image?",
-        "image_url": "data:image/jpeg;base64,..."
-      }
-    ]
-  },
-  "parameters": {
-    "temperature": 0.7,
-    "max_tokens": 1024
-  }
-}
-```
-
-## Project Structure
-- `/api` - API server implementation and documentation
-- `/model` - Model connection and integration documentation
-- `/ui` - Web interface and admin panel
-
-## Integration
-Client applications connect to the API using Alibaba/DashScope format with X-DashScope-Token header. The API server handles all connections to Hugging Face models.
+## Usage with Client Apps
+Point your client applications to: `http://localhost:3000` (or the Codespaces URL) instead of external APIs.
 
 ## Security
-- API key authentication via X-DashScope-Token header
-- Individual API keys per client application (admin panel)
-- All model connections are handled centrally
-- Project-based session isolation
-
-## Future Plans
-- Add support for additional AI models
-- Expand multimodal capabilities
-- Add more sophisticated session management
-- Enhance admin panel features
+- API key authentication required for all endpoints
+- Uses Hugging Face's secure inference API
+- No sensitive data stored client-side

@@ -379,7 +379,7 @@
     </div>
 
     <script>
-        // API Configuration
+        // API Configuration - Using the external bapXconnect API endpoint
         const API_URL = 'https://getwinharris.github.io/bapXconnect/api/api/v1/text/generation';
         const API_KEY = 'getwinharris.github.io/bapXconnect/api';
         
@@ -451,7 +451,8 @@
                     }
                 };
 
-                // Send request to bapXconnect API
+                // Send request to bapXconnect API (using the correct proxy endpoint)
+                // Note: For browser-based requests, you may need to use a proxy or CORS-enabled endpoint
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {

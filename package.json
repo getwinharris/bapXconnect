@@ -19,14 +19,14 @@
   "author": "getwinharris",
   "sideEffects": false,
   "type": "module",
-  "main": "dist/index.js",
+  "main": "sandbox.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "bapxconnect": "dist/cli.js"
+    "bapxconnect": "sandbox.js"
   },
   "scripts": {
-    "start": "node startLocalApi.js",
-    "dev": "tsx startLocalApi.js",
+    "start": "node sandbox.js",
+    "dev": "nodemon sandbox.js",
     "build": "tsc",
     "test": "vitest run",
     "lint": "eslint . --ext .ts,.tsx"
@@ -41,6 +41,7 @@
   "devDependencies": {
     "@types/express": "^4.17.17",
     "@types/node": "^20.8.2",
+    "nodemon": "^3.0.0",
     "tsx": "^4.7.0",
     "typescript": "^5.2.2",
     "vitest": "^1.0.0"

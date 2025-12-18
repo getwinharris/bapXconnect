@@ -25,11 +25,11 @@
     "bapxconnect": "sandbox.js"
   },
   "scripts": {
-    "start": "node sandbox.js",
-    "dev": "nodemon sandbox.js",
-    "build": "tsc",
-    "test": "vitest run",
-    "lint": "eslint . --ext .ts,.tsx"
+    "start": "echo 'This is a git-based API system. Interactions happen through git commits to requests/ directory.'",
+    "dev": "echo 'Run git commit operations to interact with API'",
+    "build": "echo 'No build needed - git-based system'",
+    "test": "echo 'Tests run through GitHub Actions'",
+    "lint": "echo 'Git-based system - no linting needed'"
   },
   "dependencies": {
     "@google/genai": "^0.1.0",

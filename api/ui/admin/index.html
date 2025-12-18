@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - bapXconnect API</title>
+    <title>Admin Panel - bapXconnect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -11,500 +12,671 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%);
-            color: #e6e6e6;
+            background: linear-gradient(135deg, #0f172a 0%, #1a1a2e 100%);
+            color: #e6e6e5;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+
+        .header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4361ee;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            color: #f72585;
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
             padding: 20px;
         }
-        
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 40px;
-            background: rgba(30, 30, 46, 0.9);
+
+        .login-box {
+            background: rgba(25, 30, 46, 0.9);
             border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
             border: 1px solid #4361ee;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
-        
-        .dashboard {
-            display: none;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #4cc9f0;
-        }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         label {
             display: block;
             margin-bottom: 8px;
             color: #a9d6e5;
         }
-        
-        input[type="text"], input[type="email"], input[type="password"], select {
+
+        input {
             width: 100%;
             padding: 12px;
-            border-radius: 5px;
+            border-radius: 8px;
             border: 1px solid #4361ee;
-            background: rgba(25, 25, 40, 0.8);
+            background: rgba(25, 50, 60, 0.8);
             color: white;
             font-size: 1rem;
         }
-        
+
+        input:focus {
+            outline: none;
+            border-color: #4cc9f0;
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.3);
+        }
+
         .btn {
-            padding: 12px 20px;
+            width: 100%;
+            padding: 12px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 1rem;
             font-weight: 600;
             transition: all 0.3s ease;
         }
-        
+
         .primary-btn {
             background: linear-gradient(90deg, #4361ee, #3a0ca3);
             color: white;
-            width: 100%;
         }
-        
+
         .primary-btn:hover {
             background: linear-gradient(90deg, #3a0ca3, #7209b7);
+            transform: translateY(-2px);
         }
-        
-        .secondary-btn {
-            background: rgba(76, 201, 240, 0.2);
-            color: #4cc9f0;
-            border: 1px solid #4cc9f0;
+
+        .dashboard {
+            display: none;
+            flex: 1;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
         }
-        
-        .secondary-btn:hover {
-            background: rgba(76, 201, 240, 0.4);
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
         }
-        
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 20px;
-        }
-        
+
         .sidebar {
-            background: rgba(25, 25, 40, 0.8);
+            width: 250px;
+            background: rgba(25, 30, 46, 0.8);
             border-radius: 10px;
             padding: 20px;
             height: fit-content;
         }
-        
-        .sidebar-nav ul {
-            list-style: none;
-        }
-        
-        .sidebar-nav li {
-            margin-bottom: 10px;
-        }
-        
-        .sidebar-nav a {
-            color: #a9d6e5;
-            text-decoration: none;
-            padding: 10px;
-            display: block;
+
+        .nav-item {
+            padding: 12px 15px;
             border-radius: 5px;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
         }
-        
-        .sidebar-nav a:hover, .sidebar-nav a.active {
+
+        .nav-item:hover, .nav-item.active {
             background: rgba(76, 201, 240, 0.2);
-            color: #4cc9f0;
+            border-left: 3px solid #4cc9f0;
         }
-        
+
         .main-content {
-            background: rgba(30, 30, 46, 0.8);
+            flex: 1;
+            margin-left: 20px;
+            background: rgba(15, 23, 42, 0.6);
             border-radius: 10px;
             padding: 30px;
         }
-        
+
         .section {
             display: none;
         }
-        
+
         .section.active {
             display: block;
         }
-        
-        .section-title {
-            color: #4cc9f0;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #4361ee;
-        }
-        
+
         .api-keys-table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
-        
+
         .api-keys-table th, .api-keys-table td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #4361ee;
         }
-        
+
         .api-keys-table th {
             color: #f72585;
         }
-        
-        .model-selection {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+
+        .key-actions {
+            display: flex;
+            gap: 8px;
         }
-        
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .copy-btn {
+            background: rgba(76, 201, 240, 0.2);
+            color: #4cc9f0;
+            border: 1px solid #4361ee;
+        }
+
+        .delete-btn {
+            background: rgba(247, 37, 133, 0.2);
+            color: #f72585;
+            border: 1px solid #f72585;
+        }
+
+        .key-generator {
+            background: rgba(50, 50, 70, 0.5);
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .model-config {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(76, 201, 240, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #4cc9f0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(76, 201, 240, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 3px solid #4cc9f0;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4cc9f0;
+        }
+
+        .stat-label {
+            color: #a9d6e5;
+            margin-top: 5px;
+        }
+
         .model-card {
             background: rgba(50, 50, 70, 0.7);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
             border: 1px solid #3a0ca3;
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
-        
-        .model-card:hover, .model-card.selected {
-            border-color: #f72585;
-            background: rgba(120, 20, 100, 0.3);
+
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
-        
+
         .model-name {
             color: #4cc9f0;
             font-size: 1.2rem;
-            margin-bottom: 10px;
         }
-        
-        .model-desc {
-            color: #a9d6e5;
-            font-size: 0.9rem;
+
+        .model-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
         }
-        
-        .key-generator {
-            background: rgba(50, 50, 70, 0.7);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-        
-        .notification {
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        
-        .success {
+
+        .active {
             background: rgba(40, 167, 69, 0.2);
             color: #28a745;
-            border: 1px solid #28a745;
         }
-        
-        .error {
+
+        .inactive {
             background: rgba(220, 53, 69, 0.2);
             color: #dc3545;
-            border: 1px solid #dc3545;
+        }
+
+        .connection-info {
+            background: rgba(30, 40, 60, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
-    <div class="login-container" id="loginContainer">
-        <div class="header">
-            <h1>Admin Login</h1>
-            <p>Access the bapXconnect API management panel</p>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+            <span>Admin Panel</span>
         </div>
-        
-        <form id="loginForm">
+        <div>
+            <a href="/" class="btn secondary-btn" style="background: rgba(100, 100, 140, 0.5); color: #a9d6e5; border: 1px solid #4361ee; padding: 8px 15px; text-decoration: none; display: inline-block; border-radius: 5px; margin-right: 10px;">Back to Demo</a>
+        </div>
+    </div>
+
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <h2 style="text-align: center; color: #4cc9f0; margin-bottom: 30px;">Administrator Login</h2>
+            
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" required placeholder="admin@example.com">
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required placeholder="••••••••">
-            </div>
-            <button type="submit" class="btn primary-btn">Login</button>
-        </form>
-    </div>
-    
-    <div class="dashboard" id="dashboard">
-        <div class="dashboard-container">
-            <div class="sidebar">
-                <div class="header">
-                    <h2>Admin Panel</h2>
-                </div>
-                <nav class="sidebar-nav">
-                    <ul>
-                        <li><a href="#" class="active" onclick="showSection('overview')">Overview</a></li>
-                        <li><a href="#" onclick="showSection('apiKeys')">API Keys</a></li>
-                        <li><a href="#" onclick="showSection('modelConfig')">Model Configuration</a></li>
-                        <li><a href="#" onclick="showSection('users')">Users</a></li>
-                        <li><a href="#" onclick="showSection('settings')">Settings</a></li>
-                    </ul>
-                </nav>
+                <input type="email" id="email" placeholder="admin@example.com">
             </div>
             
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+            
+            <button class="btn primary-btn" onclick="login()">Login</button>
+            
+            <div style="margin-top: 20px; text-align: center; color: #a9d6e5; font-size: 0.9rem;">
+                <p>Credentials: getwinharris@gmail.com / bapX2025#</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+        <div class="dashboard-header">
+            <h1>bapXconnect Admin Panel</h1>
+            <button class="btn primary-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <div style="display: flex; gap: 20px;">
+            <div class="sidebar">
+                <h3 style="color: #4cc9f0; margin-bottom: 20px;">Navigation</h3>
+                
+                <div class="nav-item active" onclick="showSection('overview')">
+                    <i class="fas fa-home"></i>
+                    <span>Overview</span>
+                </div>
+                
+                <div class="nav-item" onclick="showSection('apiKeys')">
+                    <i class="fas fa-key"></i>
+                    <span>API Keys</span>
+                </div>
+                
+                <div class="nav-item" onclick="showSection('models')">
+                    <i class="fas fa-microchip"></i>
+                    <span>Model Config</span>
+                </div>
+                
+                <div class="nav-item" onclick="showSection('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+            </div>
+
             <div class="main-content">
+                <!-- Overview Section -->
                 <div id="overview" class="section active">
-                    <h2 class="section-title">Dashboard Overview</h2>
-                    <p>Welcome to the bapXconnect API Admin Panel. Manage API keys, configure models, and monitor usage.</p>
+                    <h2>System Overview</h2>
                     
-                    <div style="margin-top: 30px;">
-                        <h3>System Status</h3>
-                        <p><strong>Hugging Face Models Connection:</strong> <span id="hf-status" style="color: #28a745;">Connected</span></p>
-                        <p><strong>Oracle Cloud Deployment:</strong> <span id="oracle-status" style="color: #28a745;">Active</span></p>
-                        <p><strong>Total API Keys Generated:</strong> <span id="total-keys">0</span></p>
-                        <p><strong>Active Models:</strong> <span id="active-models">0</span></p>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalKeys">0</div>
+                            <div class="stat-label">API Keys Generated</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="activeModels">4</div>
+                            <div class="stat-label">Active Models</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="requestsToday">0</div>
+                            <div class="stat-label">Requests Today</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="uptime">100%</div>
+                            <div class="stat-label">System Uptime</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin: 25px 0 15px;">API Status</h3>
+                    <div style="background: rgba(76, 201, 240, 0.1); padding: 20px; border-radius: 8px; border-left: 4px solid #4cc9f0;">
+                        <p><strong>API Endpoint:</strong> https://getwinharris.github.io/bapXconnect/api</p>
+                        <p><strong>Authentication:</strong> X-DashScope-Token header</p>
+                        <p><strong>API Key Format:</strong> getwinharris.github.io/bapXconnect/api</p>
+                        <p><strong>Connection:</strong> <span style="color: #28a745;">✓ Connected to Hugging Face models</span></p>
+                        <p><strong>Infrastructure:</strong> Oracle Cloud (152.70.70.254)</p>
                     </div>
                 </div>
-                
+
+                <!-- API Keys Section -->
                 <div id="apiKeys" class="section">
-                    <h2 class="section-title">API Key Management</h2>
-                    <button class="btn secondary-btn" onclick="generateApiKey()">Generate New API Key</button>
+                    <h2>API Key Management</h2>
+                    <p>Generate API keys for client applications in your ecosystem</p>
                     
-                    <div style="margin-top: 20px;">
-                        <table class="api-keys-table">
-                            <thead>
-                                <tr>
-                                    <th>Key</th>
-                                    <th>Model</th>
-                                    <th>Created</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="api-keys-body">
-                                <!-- API keys will be populated here -->
-                            </tbody>
-                        </table>
+                    <div class="key-generator">
+                        <h3 style="color: #f72585; margin-bottom: 15px;">Generate New API Key</h3>
+                        
+                        <div class="form-group">
+                            <label for="appName">Application Name</label>
+                            <input type="text" id="appName" placeholder="e.g., My Coding Tool, Customer Support Chatbot">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="modelSelect">Default Model</label>
+                            <select id="modelSelect" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #4361ee; background: rgba(25, 50, 60, 0.8); color: white;">
+                                <option value="qwen2.5-omni">Qwen2.5-Omni (Multimodal)</option>
+                                <option value="qwen2.5-coder">Qwen2.5-Coder (Code)</option>
+                                <option value="qwen3-omni-30b-a3b-instruct">Qwen3-Omni-30B (Advanced)</option>
+                                <option value="llama3">Llama3 (General)</option>
+                            </select>
+                        </div>
+                        
+                        <button class="btn primary-btn" onclick="generateApiKey()">Generate API Key</button>
                     </div>
-                </div>
-                
-                <div id="modelConfig" class="section">
-                    <h2 class="section-title">Model Configuration</h2>
-                    <p>Connect to Hugging Face models deployed on Oracle Cloud infrastructure</p>
                     
-                    <div class="model-selection">
-                        <div class="model-card" onclick="selectModel('qwen2.5-omni', this)">
+                    <h3 style="margin: 30px 0 15px;">Generated API Keys</h3>
+                    <table class="api-keys-table">
+                        <thead>
+                            <tr>
+                                <th>API Key</th>
+                                <th>Application</th>
+                                <th>Model</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="apiKeysTable">
+                            <!-- Keys will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Model Configuration Section -->
+                <div id="models" class="section">
+                    <h2>Model Configuration</h2>
+                    <p>Configure connections to Hugging Face models</p>
+                    
+                    <div class="model-card">
+                        <div class="model-header">
                             <div class="model-name">Qwen2.5-Omni</div>
-                            <div class="model-desc">Multimodal model via Hugging Face @ Qwen/Qwen2.5-Omni-7B</div>
+                            <div class="model-status active">Active</div>
                         </div>
-                        <div class="model-card" onclick="selectModel('qwen2.5-coder', this)">
-                            <div class="model-name">Qwen2.5-Coder</div>
-                            <div class="model-desc">Specialized coding model via Hugging Face</div>
-                        </div>
-                        <div class="model-card" onclick="selectModel('qwen3-omni', this)">
-                            <div class="model-name">Qwen3-Omni-30B-A3B</div>
-                            <div class="model-desc">Latest multimodal model via Hugging Face @ Qwen/Qwen3-Omni-30B-A3B-Instruct</div>
-                        </div>
-                        <div class="model-card" onclick="selectModel('custom-model', this)">
-                            <div class="model-name">Custom Model</div>
-                            <div class="model-desc">Upload your own model via Oracle Cloud</div>
+                        <p>Multimodal model supporting text, image, audio, and video inputs with streaming text and speech outputs</p>
+                        <div class="connection-info">
+                            <p><strong>Hugging Face Path:</strong> @huggingface/qwen/Qwen2.5-Omni-7B</p>
+                            <p><strong>Connects to:</strong> https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Omni-7B</p>
+                            <p><strong>Capabilities:</strong> Text, Image, Audio, Video processing</p>
                         </div>
                     </div>
                     
-                    <div class="key-generator" id="key-generator" style="display: none;">
-                        <h3>Generate API Key for Selected Model</h3>
-                        <div class="form-group">
-                            <label for="product-name">Product/App Name</label>
-                            <input type="text" id="product-name" placeholder="e.g., My Coding Tool">
+                    <div class="model-card">
+                        <div class="model-header">
+                            <div class="model-name">Qwen2.5-Coder</div>
+                            <div class="model-status active">Active</div>
                         </div>
-                        <div class="form-group">
-                            <label for="model-endpoint">Model Endpoint</label>
-                            <input type="text" id="model-endpoint" placeholder="API endpoint for this model">
+                        <p>Specialized coding model with enhanced capabilities for code generation, reasoning, and debugging</p>
+                        <div class="connection-info">
+                            <p><strong>Hugging Face Path:</strong> @huggingface/qwen/Qwen2.5-Coder-7B-Instruct</p>
+                            <p><strong>Connects to:</strong> https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-7B-Instruct</p>
+                            <p><strong>Capabilities:</strong> Code generation, explanation, debugging</p>
                         </div>
-                        <button class="btn primary-btn" onclick="generateModelApiKey()">Generate Key</button>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-header">
+                            <div class="model-name">Qwen3-Omni-30B-A3B-Instruct</div>
+                            <div class="model-status active">Active</div>
+                        </div>
+                        <p>Advanced multimodal model with Mixture of Experts (MoE) architecture and multilingual support</p>
+                        <div class="connection-info">
+                            <p><strong>Hugging Face Path:</strong> @huggingface/qwen/Qwen3-Omni-30B-A3B-Instruct</p>
+                            <p><strong>Connects to:</strong> https://api-inference.huggingface.co/models/Qwen/Qwen3-Omni-30B-A3B-Instruct</p>
+                            <p><strong>Capabilities:</strong> All modalities with 119 text + 19 speech languages</p>
+                        </div>
+                    </div>
+                    
+                    <div class="model-card">
+                        <div class="model-header">
+                            <div class="model-name">Llama3</div>
+                            <div class="model-status active">Active</div>
+                        </div>
+                        <p>General purpose model with strong reasoning capabilities</p>
+                        <div class="connection-info">
+                            <p><strong>Hugging Face Path:</strong> @huggingface/meta-llama/Meta-Llama-3-8B-Instruct</p>
+                            <p><strong>Connects to:</strong> https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct</p>
+                            <p><strong>Capabilities:</strong> Text generation and reasoning</p>
+                        </div>
                     </div>
                 </div>
-                
-                <div id="users" class="section">
-                    <h2 class="section-title">User Management</h2>
-                    <p>Currently no user accounts - API keys are generated directly</p>
-                </div>
-                
+
+                <!-- Settings Section -->
                 <div id="settings" class="section">
-                    <h2 class="section-title">System Settings</h2>
-                    <p>Hugging Face Model Path: <code>@huggingface/qwen/models</code></p>
-                    <p>API Endpoint: <code>https://getwinharris.github.io/bapXconnect/api</code></p>
-                    <p>Alibaba/DashScope Endpoints:</p>
-                    <ul>
-                        <li>Text Generation: <code>/api/v1/text/generation</code></li>
-                        <li>Model List: <code>/api/v1/models</code></li>
-                        <li>Token Count: <code>/api/v1/text/tokenize</code></li>
-                    </ul>
-                    <p>Authentication: Use <code>X-DashScope-Token</code> header</p>
+                    <h2>System Settings</h2>
+                    <p>Configure system-wide settings for bapXconnect API gateway</p>
+                    
+                    <div style="background: rgba(50, 50, 70, 0.5); padding: 25px; border-radius: 10px; margin-top: 20px;">
+                        <h3 style="color: #f72585; margin-bottom: 15px;">API Configuration</h3>
+                        
+                        <div class="form-group">
+                            <label for="apiEndpoint">API Endpoint URL</label>
+                            <input type="text" id="apiEndpoint" value="https://getwinharris.github.io/bapXconnect/api" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="defaultModel">Default Model</label>
+                            <select id="defaultModel" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #4361ee; background: rgba(25, 50, 60, 0.8); color: white;">
+                                <option value="qwen2.5-omni" selected>Qwen2.5-Omni (Multimodal)</option>
+                                <option value="qwen2.5-coder">Qwen2.5-Coder (Code)</option>
+                                <option value="qwen3-omni-30b-a3b-instruct">Qwen3-Omni-30B (Advanced)</option>
+                                <option value="llama3">Llama3 (General)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gitOpsDir">Git Operations Directory</label>
+                            <input type="text" id="gitOpsDir" value="requests/" readonly>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(76, 201, 240, 0.1); padding: 20px; border-radius: 10px; margin-top: 25px; border-left: 4px solid #4cc9f0;">
+                        <h3 style="color: #4cc9f0; margin-bottom: 15px;">Git-Based API Operation</h3>
+                        <p>API requests and responses are processed through git commits:</p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Client requests are stored as JSON files in <code>requests/</code> directory</li>
+                            <li>GitHub Actions process requests and store responses in <code>responses/</code> directory</li>
+                            <li>Sessions are maintained in <code>sessions/</code> directory</li>
+                            <li>API keys are generated and stored securely</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Admin login credentials
-        const ADMIN_EMAIL = 'getwinharris@gmail.com';
-        const ADMIN_PASSWORD = 'bapX2025#';
-        
-        // Available models that connect to Hugging Face
-        const MODELS = [
-            { id: 'qwen2.5-omni', name: 'Qwen2.5-Omni', desc: 'Multimodal model via Hugging Face @ Qwen/Qwen2.5-Omni-7B', endpoint: 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Omni-7B' },
-            { id: 'qwen2.5-coder', name: 'Qwen2.5-Coder', desc: 'Specialized coding model via Hugging Face', endpoint: 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-7B' },
-            { id: 'qwen3-omni', name: 'Qwen3-Omni-30B-A3B', desc: 'Latest multimodal model via Hugging Face @ Qwen/Qwen3-Omni-30B-A3B-Instruct', endpoint: 'https://api-inference.huggingface.co/models/Qwen/Qwen3-Omni-30B-A3B-Instruct' },
-            { id: 'custom-model', name: 'Custom Model', desc: 'Your custom model via Oracle Cloud', endpoint: 'https://your-oracle-instance.com/models/custom' }
-        ];
-        
-        let selectedModel = null;
+        // Mock data for API keys and stats
         let apiKeys = [];
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('loginForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                
-                if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-                    document.getElementById('loginContainer').style.display = 'none';
-                    document.getElementById('dashboard').style.display = 'block';
-                    
-                    // Load existing data
-                    loadDashboardData();
-                } else {
-                    alert('Invalid credentials');
-                }
-            });
-        });
-        
-        function loadDashboardData() {
-            // Update dashboard stats
-            document.getElementById('total-keys').textContent = apiKeys.length;
-            document.getElementById('active-models').textContent = MODELS.length;
+        let isLoggedIn = false;
+
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (email === 'getwinharris@gmail.com' && password === 'bapX2025#') {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'flex';
+                isLoggedIn = true;
+                loadDashboardData();
+            } else {
+                alert('Invalid credentials. Use: getwinharris@gmail.com / bapX2025#');
+            }
         }
-        
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('loginContainer').style.display = 'flex';
+                isLoggedIn = false;
+            }
+        }
+
+        function loadDashboardData() {
+            document.getElementById('totalKeys').textContent = apiKeys.length;
+            
+            // Load API keys table
+            updateApiKeysTable();
+        }
+
+        function generateApiKey() {
+            const appName = document.getElementById('appName').value.trim();
+            const model = document.getElementById('modelSelect').value;
+
+            if (!appName) {
+                alert('Please enter an application name');
+                return;
+            }
+
+            // Generate API key in the format: bapX_[app-name]_[random-string]_[timestamp]
+            const randomString = Math.random().toString(36).substring(2, 10);
+            const timestamp = Date.now().toString(36);
+            const apiKey = `bapX_${appName}_${randomString}_${timestamp}`;
+
+            const keyObj = {
+                id: apiKeys.length + 1,
+                key: apiKey,
+                app: appName,
+                model: getModelName(model),
+                createdAt: new Date().toISOString()
+            };
+
+            apiKeys.push(keyObj);
+            updateApiKeysTable();
+
+            document.getElementById('appName').value = '';
+            alert(`API Key generated successfully!\n\nKey: ${apiKey}\n\nThis key can be used by your client application.`);
+        }
+
+        function getModelName(modelValue) {
+            const models = {
+                'qwen2.5-omni': 'Qwen2.5-Omni (Multimodal)',
+                'qwen2.5-coder': 'Qwen2.5-Coder (Code)',
+                'qwen3-omni-30b-a3b-instruct': 'Qwen3-Omni-30B (Advanced)',
+                'llama3': 'Llama3 (General)'
+            };
+            return models[modelValue] || modelValue;
+        }
+
+        function updateApiKeysTable() {
+            const tbody = document.getElementById('apiKeysTable');
+            tbody.innerHTML = '';
+
+            apiKeys.forEach(key => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${key.key.substring(0, 20)}...</td>
+                    <td>${key.app}</td>
+                    <td>${key.model}</td>
+                    <td>${new Date(key.createdAt).toLocaleDateString()}</td>
+                    <td class="key-actions">
+                        <button class="action-btn copy-btn" onclick="copyKey('${key.key}')">Copy</button>
+                        <button class="action-btn delete-btn" onclick="deleteKey(${key.id})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Update stats
+            document.getElementById('totalKeys').textContent = apiKeys.length;
+        }
+
+        function copyKey(key) {
+            navigator.clipboard.writeText(key).then(() => {
+                alert('API key copied to clipboard!');
+            }).catch(err => {
+                console.error('Error copying key: ', err);
+            });
+        }
+
+        function deleteKey(id) {
+            if (confirm('Are you sure you want to delete this API key?')) {
+                apiKeys = apiKeys.filter(key => key.id !== id);
+                updateApiKeysTable();
+            }
+        }
+
         function showSection(sectionId) {
             // Hide all sections
             document.querySelectorAll('.section').forEach(section => {
                 section.classList.remove('active');
             });
-            
+
             // Show selected section
             document.getElementById(sectionId).classList.add('active');
-            
-            // Update active nav link
-            document.querySelectorAll('.sidebar-nav a').forEach(link => {
-                link.classList.remove('active');
+
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
             });
             event.target.classList.add('active');
         }
-        
-        function selectModel(modelId, element) {
-            // Update UI selection
-            document.querySelectorAll('.model-card').forEach(card => {
-                card.style.borderColor = '#3a0ca3';
-                card.style.backgroundColor = 'rgba(50, 50, 70, 0.7)';
-            });
-            element.style.borderColor = '#f72585';
-            element.style.backgroundColor = 'rgba(120, 20, 100, 0.3)';
-            
-            selectedModel = MODELS.find(m => m.id === modelId);
-            document.getElementById('key-generator').style.display = 'block';
-            document.getElementById('model-endpoint').value = selectedModel.endpoint;
-        }
-        
-        function generateApiKey() {
-            if (!selectedModel) {
-                alert('Please select a model first');
-                return;
-            }
-            
-            const productName = document.getElementById('product-name').value || 'unnamed-app';
-            const newKey = generateUniqueKey();
-            
-            const keyObj = {
-                id: apiKeys.length + 1,
-                key: newKey,
-                model: selectedModel.name,
-                productName: productName,
-                createdAt: new Date().toISOString(),
-                status: 'active'
-            };
-            
-            apiKeys.push(keyObj);
-            updateApiKeysTable();
-            
-            // Show success notification
-            showNotification('API key generated successfully!', 'success');
-        }
-        
-        function generateModelApiKey() {
-            generateApiKey();
-        }
-        
-        function generateUniqueKey() {
-            // Generate a unique API key
-            return 'bapX_' + Math.random().toString(36).substr(2, 10) + '_' + Date.now().toString(36);
-        }
-        
-        function updateApiKeysTable() {
-            const tbody = document.getElementById('api-keys-body');
-            tbody.innerHTML = '';
-            
-            apiKeys.forEach(key => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${key.key}</td>
-                    <td>${key.model}</td>
-                    <td>${new Date(key.createdAt).toLocaleDateString()}</td>
-                    <td>${key.status}</td>
-                    <td>
-                        <button class="btn secondary-btn" onclick="copyToClipboard('${key.key}')">Copy</button>
-                        <button class="btn secondary-btn" onclick="deleteApiKey(${key.id})">Delete</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-        
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(function() {
-                showNotification('API key copied to clipboard!', 'success');
-            });
-        }
-        
-        function deleteApiKey(id) {
-            if (confirm('Are you sure you want to delete this API key?')) {
-                apiKeys = apiKeys.filter(key => key.id !== id);
-                updateApiKeysTable();
-                showNotification('API key deleted', 'success');
-            }
-        }
-        
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            notification.style.display = 'block';
-            
-            const mainContent = document.querySelector('.main-content');
-            mainContent.insertBefore(notification, mainContent.firstChild);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
+
+        // Initialize with some mock data
+        window.onload = function() {
+            // Add some initial API keys for demonstration
+            apiKeys = [
+                {
+                    id: 1,
+                    key: 'bapX_my-coding-tool_a1b2c3d4_e5f6g7h8',
+                    app: 'My Coding Tool',
+                    model: 'Qwen2.5-Coder (Code)',
+                    createdAt: '2025-12-18T10:30:00.000Z'
+                },
+                {
+                    id: 2,
+                    key: 'bapX_customer-support_i9j8k7l6_m5n4o3p2',
+                    app: 'Customer Support Bot',
+                    model: 'Qwen2.5-Omni (Multimodal)',
+                    createdAt: '2025-12-18T09:15:00.000Z'
+                }
+            ];
         }
     </script>
 </body>

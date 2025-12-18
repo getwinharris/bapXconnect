@@ -1,0 +1,106 @@
+name: bapXconnect API Processor
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'requests/**'
+      - 'sessions/**'
+
+jobs:
+  process-api-request:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Get full history for incremental updates
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install dependencies for processing
+      run: |
+        npm install node-fetch
+
+    - name: Process API Requests
+      run: |
+        # Find new request files that haven't been processed
+        for request_file in $(find requests/ -name "*.json" -newer .last_processed 2>/dev/null || find requests/ -name "*.json" 2>/dev/null); do
+          echo "Processing request: $request_file"
+          
+          # Extract request details
+          REQUEST_ID=$(jq -r '.id' "$request_file")
+          CORRELATION_ID=$(jq -r '.correlation_id // ""' "$request_file")
+          MODEL=$(jq -r '.model' "$request_file")
+          INPUT=$(jq -r '.input' "$request_file")
+          PARAMETERS=$(jq -r '.parameters // {}' "$request_file")
+          
+          # Process the request using Hugging Face models
+          # This is a simplified version - in practice this would connect to actual Hugging Face models
+          RESPONSE_TEXT="This is a simulated response from model: $MODEL for input: $INPUT"
+          
+          # Create response
+          RESPONSE_JSON=$(cat <<EOF
+{
+  "id": "resp_$(date +%s)_${REQUEST_ID}",
+  "request_id": "$REQUEST_ID",
+  "correlation_id": "$CORRELATION_ID",
+  "model": "$MODEL",
+  "output": {
+    "text": "$RESPONSE_TEXT"
+  },
+  "usage": {
+    "prompt_tokens": $(echo "$INPUT" | wc -c),
+    "completion_tokens": $(echo "$RESPONSE_TEXT" | wc -c),
+    "total_tokens": $(($(echo "$INPUT" | wc -c) + $(echo "$RESPONSE_TEXT" | wc -c))),
+    "finish_reason": "stop"
+  },
+  "created": $(date +%s)
+}
+EOF
+)
+          
+          # Write response to responses directory
+          mkdir -p responses
+          echo "$RESPONSE_JSON" > "responses/response_$REQUEST_ID.json"
+          
+          # Update the session if correlation_id provided
+          if [ ! -z "$CORRELATION_ID" ] && [ "$CORRELATION_ID" != "null" ]; then
+            mkdir -p sessions
+            SESSION_FILE="sessions/$CORRELATION_ID.json"
+            
+            if [ -f "$SESSION_FILE" ]; then
+              # Append to existing session (incremental update)
+              jq -s '.[0] as $session | .[1] | .messages += [{"role": "user", "content": $session.input}, {"role": "assistant", "content": $session.output.text}] | .updated_at = now' "$SESSION_FILE" <<< "$(echo '{}')" > tmp.json && mv tmp.json "$SESSION_FILE"
+            else
+              # Create new session
+              SESSION_JSON=$(cat <<EOF
+{
+  "session_id": "$CORRELATION_ID",
+  "created_at": $(date +%s),
+  "updated_at": $(date +%s),
+  "messages": [
+    {"role": "user", "content": "$INPUT"},
+    {"role": "assistant", "content": "$RESPONSE_TEXT"}
+  ]
+}
+EOF
+)
+              echo "$SESSION_JSON" > "$SESSION_FILE"
+            fi
+          fi
+        done
+        
+        # Update last processed time
+        touch .last_processed
+
+    - name: Commit and push responses
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add responses/ sessions/
+        if [[ -n $(git status --porcelain responses/ sessions/) ]]; then
+          git commit -m "Add API responses and session updates [skip ci]" -a
+          git push
+        fi

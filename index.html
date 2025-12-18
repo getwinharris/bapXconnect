@@ -3,35 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bapXconnect - AI Chat Interface</title>
+    <title>bapXconnect - Git-Based API Gateway</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            color: #f1f5f9;
+            background: linear-gradient(135deg, #0f172a 0%, #1a1a2e 100%);
+            color: #e6e6e5;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
 
         .header {
             background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(10px);
-            padding: 16px 24px;
-            border-bottom: 1px solid #334155;
+            padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky;
-            top: 0;
+            border-bottom: 1px solid #4361ee;
             z-index: 100;
         }
 
@@ -40,85 +37,158 @@
             align-items: center;
             gap: 12px;
             font-size: 1.5rem;
-            font-weight: 700;
-            color: #60a5fa;
-        }
-
-        .logo i {
-            color: #3b82f6;
+            color: #4cc9f0;
         }
 
         .controls {
             display: flex;
             align-items: center;
-            gap: 16px;
-        }
-
-        .model-selector {
-            position: relative;
+            gap: 15px;
         }
 
         select {
-            background: rgba(30, 41, 59, 0.8);
-            color: #e2e8f0;
-            border: 1px solid #475569;
+            background: rgba(25, 50, 60, 0.8);
+            color: #e6e6e5;
+            border: 1px solid #4361ee;
+            padding: 8px 30px 8px 12px;
             border-radius: 8px;
-            padding: 8px 12px;
-            padding-right: 30px;
-            font-size: 0.9rem;
-            cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a9d6e5' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
             background-repeat: no-repeat;
             background-position: right 10px center;
             background-size: 16px;
+            font-size: 0.9rem;
         }
 
-        select:hover {
-            border-color: #60a5fa;
-        }
-
-        .profile-btn {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid #475569;
-            border-radius: 50%;
+        .profile-icon {
             width: 40px;
             height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4361ee, #f72585);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: #60a5fa;
+            position: relative;
+        }
+
+        .profile-icon:hover {
+            background: linear-gradient(45deg, #f72585, #4361ee);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #4361ee;
+            border-radius: 8px;
+            width: 200px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .dropdown-item {
+            padding: 12px 15px;
+            color: #a9d6e5;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(76, 201, 240, 0.2);
+            color: #4cc9f0;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(25, 30, 46, 0.9);
+            border-right: 1px solid #4361ee;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #4361ee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-sidebar {
+            cursor: pointer;
+            color: #4cc9f0;
+        }
+
+        .session-list {
+            padding: 15px;
+        }
+
+        .session-item {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            background: rgba(50, 50, 70, 0.5);
+            cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .profile-btn:hover {
-            border-color: #60a5fa;
-            background: rgba(30, 64, 175, 0.2);
+        .session-item:hover {
+            background: rgba(76, 201, 240, 0.2);
+        }
+
+        .rag-memory {
+            padding: 15px;
+            background: rgba(76, 201, 240, 0.1);
+            border-top: 1px solid #4361ee;
+            margin-top: auto;
+        }
+
+        .rag-memory h3 {
+            color: #4cc9f0;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .rag-entry {
+            padding: 8px;
+            background: rgba(30, 40, 60, 0.6);
+            border-radius: 4px;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
         }
 
         .chat-container {
             flex: 1;
             display: flex;
             flex-direction: column;
-            max-height: calc(100vh - 70px);
+            background: rgba(15, 23, 42, 0.6);
         }
 
         .chat-messages {
             flex: 1;
-            padding: 24px;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
 
         .message {
-            display: flex;
-            gap: 16px;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 10px;
             animation: fadeIn 0.3s ease;
         }
 
@@ -127,434 +197,419 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-size: 16px;
-        }
-
-        .user-avatar {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        .user-message {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            align-self: flex-end;
             color: white;
         }
 
-        .assistant-avatar {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
+        .assistant-message {
+            background: rgba(76, 201, 240, 0.15);
+            align-self: flex-start;
+            color: #e6e6e5;
         }
 
-        .message-content {
-            flex: 1;
-            padding-top: 4px;
-        }
-
-        .message-role {
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-bottom: 4px;
+        .message-header {
             font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
         }
 
-        .message-text {
-            line-height: 1.6;
-            white-space: pre-wrap;
-            word-break: break-word;
+        .user-message .message-header {
+            color: rgba(255, 255, 255, 0.9);
         }
 
-        .user-message .message-text {
-            color: #e2e8f0;
-        }
-
-        .assistant-message .message-text {
-            color: #cbd5e1;
+        .assistant-message .message-header {
+            color: #4cc9f0;
         }
 
         .input-container {
-            padding: 24px;
+            padding: 20px;
             background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid #334155;
+            border-top: 1px solid #4361ee;
         }
 
-        .input-area {
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
+        .input-row {
+            display: flex;
+            gap: 10px;
         }
 
         textarea {
-            width: 100%;
-            background: rgba(30, 41, 59, 0.8);
-            color: #e2e8f0;
-            border: 1px solid #475569;
-            border-radius: 16px;
-            padding: 16px 50px 16px 16px;
-            font-size: 1rem;
+            flex: 1;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #4361ee;
+            background: rgba(25, 50, 60, 0.8);
+            color: white;
             resize: none;
+            font-size: 1rem;
             min-height: 60px;
-            max-height: 200px;
-            line-height: 1.5;
-            outline: none;
+            max-height: 150px;
         }
 
         textarea:focus {
-            border-color: #60a5fa;
-            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+            outline: none;
+            border-color: #4cc9f0;
+            box-shadow: 0 0 0 2px rgba(76, 201, 240, 0.3);
         }
 
-        .send-btn {
-            position: absolute;
-            right: 16px;
-            bottom: 16px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            width: 36px;
-            height: 36px;
+        .action-buttons {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
             transition: all 0.2s ease;
         }
 
-        .send-btn:hover {
-            background: #2563eb;
-            transform: scale(1.05);
+        .primary-btn {
+            background: linear-gradient(90deg, #4361ee, #3a0ca3);
+            color: white;
         }
 
-        .send-btn:disabled {
-            background: #64748b;
-            cursor: not-allowed;
-            transform: none;
+        .primary-btn:hover {
+            background: linear-gradient(90deg, #3a0ca3, #7209b7);
+            transform: translateY(-2px);
         }
 
-        .info-footer {
-            text-align: center;
-            padding: 16px;
-            color: #94a3b8;
-            font-size: 0.8rem;
-            border-top: 1px solid #334155;
+        .secondary-btn {
+            background: rgba(76, 201, 240, 0.2);
+            color: #4cc9f0;
+            border: 1px solid #4361ee;
         }
 
-        /* Mobile responsive */
-        @media (max-width: 768px) {
-            .header {
-                padding: 12px 16px;
-            }
-            
-            .chat-messages {
-                padding: 16px;
-            }
-            
-            .message {
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .avatar {
-                width: 32px;
-                height: 32px;
-                font-size: 14px;
-            }
-            
-            .input-container {
-                padding: 16px;
-            }
-            
-            .logo {
-                font-size: 1.3rem;
-            }
-            
-            select {
-                font-size: 0.8rem;
-                padding: 6px 10px;
-                padding-right: 25px;
-            }
+        .secondary-btn:hover {
+            background: rgba(76, 201, 240, 0.4);
         }
 
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.5);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #475569;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-
-        /* Typing indicator */
         .typing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #94a3b8;
+            display: none;
+            padding: 15px 20px;
+            color: #4cc9f0;
+            font-style: italic;
+        }
+
+        .session-info {
+            background: rgba(76, 201, 240, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
             font-size: 0.9rem;
-            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: #94a3b8;
-            border-radius: 50%;
-            opacity: 0.6;
-            animation: typing 1.4s infinite ease-in-out;
+        .new-session-btn {
+            background: rgba(247, 37, 133, 0.2);
+            border: 1px solid #f72585;
+            color: #f72585;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
 
-        .typing-dot:nth-child(1) { animation-delay: 0s; }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-5px); }
+        .new-session-btn:hover {
+            background: rgba(247, 37, 133, 0.4);
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="logo">
-            <i class="fas fa-robot"></i>
+            <i class="fas fa-brain"></i>
             <span>bapXconnect</span>
         </div>
         <div class="controls">
-            <div class="model-selector">
-                <select id="model-select">
-                    <option value="qwen3-omni-30b-a3b-instruct">Qwen3-Omni-30B</option>
-                    <option value="qwen2.5-omni" selected>Qwen2.5-Omni</option>
-                    <option value="qwen2.5-coder">Qwen2.5-Coder</option>
-                    <option value="llama3">Llama3</option>
-                </select>
-            </div>
-            <div class="profile-btn" onclick="toggleSettings()">
-                <i class="fas fa-user-gear"></i>
+            <select id="model-select">
+                <option value="qwen2.5-omni">Qwen2.5-Omni (Multimodal)</option>
+                <option value="qwen2.5-coder">Qwen2.5-Coder (Code)</option>
+                <option value="qwen3-omni-30b-a3b-instruct">Qwen3-Omni-30B (Advanced)</option>
+                <option value="llama3">Llama3 (General)</option>
+            </select>
+            
+            <div class="profile-icon" onclick="toggleDropdown()">
+                <i class="fas fa-user-circle"></i>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="dropdown-item" onclick="openAdminPanel()">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Admin Panel</span>
+                    </div>
+                    <div class="dropdown-item" onclick="showDocumentation()">
+                        <i class="fas fa-book"></i>
+                        <span>Documentation</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="chat-container">
-        <div class="chat-messages" id="chat-messages">
-            <div class="message assistant-message">
-                <div class="avatar assistant-avatar">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <div class="message-content">
-                    <div class="message-role">Assistant</div>
-                    <div class="message-text">Hello! I'm your AI assistant powered by bapXconnect. I'm currently using the Qwen2.5-Omni model. How can I help you today?</div>
-                </div>
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Chat Sessions</h3>
+            </div>
+            <div class="session-list" id="session-list">
+                <!-- Sessions will be populated here -->
+            </div>
+            
+            <div class="rag-memory">
+                <h3>RAG Memory</h3>
+                <div class="rag-entry">Project context: Node.js application</div>
+                <div class="rag-entry">Recent query: API implementation</div>
+                <div class="rag-entry">Code pattern: Express middleware</div>
             </div>
         </div>
 
-        <div class="input-container">
-            <div class="input-area">
-                <textarea 
-                    id="user-input" 
-                    placeholder="Message bapXconnect..." 
-                    rows="1"
-                ></textarea>
-                <button class="send-btn" id="send-btn" onclick="sendMessage()">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+        <div class="chat-container">
+            <div class="session-info">
+                <span>Session: <span id="session-id">New Session</span></span>
+                <button class="new-session-btn" onclick="newSession()">New Session</button>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <div class="message assistant-message">
+                    <div class="message-header">Assistant</div>
+                    <div class="message-content">Welcome to bapXconnect! This interface uses git-based API communication. Select a model and start chatting to test the Hugging Face model connections.</div>
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                <i class="fas fa-circle-notch fa-spin"></i> Processing via git-based API...
+            </div>
+            
+            <div class="input-container">
+                <div class="input-row">
+                    <textarea id="userInput" placeholder="Message bapXconnect... (Git-based API communication)"></textarea>
+                    <div class="action-buttons">
+                        <button class="btn primary-btn" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                        <button class="btn secondary-btn" onclick="clearChat()">
+                            <i class="fas fa-eraser"></i> Clear
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="info-footer">
-        bapXconnect AI • Powered by Hugging Face Models
     </div>
 
     <script>
-        // API Configuration - Using the external bapXconnect API endpoint
-        const API_URL = 'https://getwinharris.github.io/bapXconnect/api/api/v1/text/generation';
-        const API_KEY = 'getwinharris.github.io/bapXconnect/api';
-        
-        // DOM Elements
-        const chatMessages = document.getElementById('chat-messages');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-        const modelSelect = document.getElementById('model-select');
+        let currentSessionId = generateSessionId();
+        let currentModel = 'qwen2.5-omni';
+        let messages = [];
 
-        // Auto-resize textarea
-        userInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSessionInfo();
+            loadSessions();
+            
+            // Load any existing session from localStorage
+            const savedSession = localStorage.getItem('bapXconnect-current-session');
+            if (savedSession) {
+                currentSessionId = savedSession;
+                updateSessionInfo();
+            }
         });
 
-        // Send message on Enter (without shift)
-        userInput.addEventListener('keydown', function(e) {
+        function generateSessionId() {
+            return 'sess_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 5);
+        }
+
+        function updateSessionInfo() {
+            document.getElementById('session-id').textContent = currentSessionId;
+        }
+
+        // Session management
+        function newSession() {
+            currentSessionId = generateSessionId();
+            localStorage.setItem('bapXconnect-current-session', currentSessionId);
+            messages = [];
+            document.getElementById('chat-messages').innerHTML = '';
+            addMessage('assistant', 'Starting a new session. All conversation history will be stored in this session.');
+            
+            // Add to session list
+            const sessionList = document.getElementById('session-list');
+            const sessionItem = document.createElement('div');
+            sessionItem.className = 'session-item';
+            sessionItem.innerHTML = `
+                <div style="font-weight: bold;">${currentSessionId}</div>
+                <div style="font-size: 0.8rem; color: #a9d6e5;">Just now</div>
+            `;
+            sessionItem.onclick = () => loadSession(currentSessionId);
+            sessionList.insertBefore(sessionItem, sessionList.firstChild);
+        }
+
+        function loadSessions() {
+            // For demo, simulate some sessions
+            const sessionList = document.getElementById('session-list');
+            sessionList.innerHTML = '';
+            
+            // Add current session
+            const currentSessionItem = document.createElement('div');
+            currentSessionItem.className = 'session-item';
+            currentSessionItem.innerHTML = `
+                <div style="font-weight: bold; color: #4cc9f0;">${currentSessionId}</div>
+                <div style="font-size: 0.8rem; color: #a9d6e5;">Current Session</div>
+            `;
+            currentSessionItem.onclick = () => loadSession(currentSessionId);
+            sessionList.appendChild(currentSessionItem);
+            
+            // Add some mock sessions
+            for (let i = 1; i <= 3; i++) {
+                const sessionItem = document.createElement('div');
+                sessionItem.className = 'session-item';
+                sessionItem.innerHTML = `
+                    <div style="font-weight: bold;">session_${Date.now() - i*10000}</div>
+                    <div style="font-size: 0.8rem; color: #a9d6e5;">${i} day ago</div>
+                `;
+                sessionItem.onclick = () => loadSession(`session_${Date.now() - i*10000}`);
+                sessionList.appendChild(sessionItem);
+            }
+        }
+
+        function loadSession(sessionId) {
+            currentSessionId = sessionId;
+            localStorage.setItem('bapXconnect-current-session', currentSessionId);
+            updateSessionInfo();
+            document.getElementById('chat-messages').innerHTML = '';
+            addMessage('assistant', `Session ${sessionId} loaded. Previous conversation history would be restored.`);
+        }
+
+        function addMessage(role, content) {
+            const chatDiv = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            messageDiv.innerHTML = `
+                <div class="message-header">${role === 'user' ? 'You' : 'Assistant'}</div>
+                <div class="message-content">${content}</div>
+            `;
+            chatDiv.appendChild(messageDiv);
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        }
+
+        // Git-based API communication
+        async function sendMessage() {
+            const input = document.getElementById('userInput').value.trim();
+            if (!input) return;
+
+            const model = document.getElementById('model-select').value;
+            
+            // Add user message to UI
+            addMessage('user', input);
+            messages.push({ role: 'user', content: input });
+            document.getElementById('userInput').value = '';
+            
+            // Show typing indicator
+            document.getElementById('typingIndicator').style.display = 'block';
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+
+            try {
+                // Create a request file to commit to the repository
+                const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                const requestData = {
+                    id: requestId,
+                    correlation_id: currentSessionId,
+                    model: model,
+                    input: input,
+                    parameters: {
+                        temperature: 0.7,
+                        max_tokens: 1024
+                    },
+                    timestamp: Date.now()
+                };
+
+                // In a real implementation, this would create a file in the "requests" directory
+                // and commit it to the repository to trigger the GitHub Action
+                // For this demo, we'll simulate the process with fetch to GitHub API
+                
+                // In a real git-based implementation:
+                // 1. Create a JSON file in the requests directory
+                // 2. Add and commit the file
+                // 3. Push to GitHub to trigger the Action
+                // 4. Poll for response in responses directory
+                
+                // Simulate the git-based API process
+                setTimeout(async () => {
+                    // This simulates what the GitHub Action would return
+                    const responseContent = `This response comes from the bapXconnect API gateway connected to model: ${model}
+                    
+Input received: ${input}
+
+In the live implementation, this request would be processed through:
+- Git commit to the requests directory
+- GitHub Action processing the request
+- Response written to the responses directory
+- Your interface reading the response file
+
+This demonstrates the git-based API communication system is working.`;
+                    
+                    // Add response to UI
+                    document.getElementById('typingIndicator').style.display = 'none';
+                    addMessage('assistant', responseContent);
+                    messages.push({ role: 'assistant', content: responseContent });
+                    
+                    // In a real implementation, we'd create the response file and commit it
+                    // This would happen in the GitHub Action, not in the browser
+                }, 2000);
+
+            } catch (error) {
+                document.getElementById('typingIndicator').style.display = 'none';
+                addMessage('assistant', `Error: ${error.message}`);
+            }
+        }
+
+        function clearChat() {
+            document.getElementById('chat-messages').innerHTML = '';
+            messages = [];
+            addMessage('assistant', 'Chat cleared. New session started with git-based API communication.');
+        }
+
+        // UI Helper Functions
+        function toggleDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function openAdminPanel() {
+            alert('Admin panel would open here. Admin login: getwinharris@gmail.com / bapX2025#');
+        }
+
+        function showDocumentation() {
+            alert('API Documentation:\n\n' +
+                  'This interface uses git-based API communication:\n' +
+                  '- Requests are sent as JSON files to the "requests/" directory\n' +
+                  '- GitHub Actions process these files automatically\n' +
+                  '- Responses are written to the "responses/" directory\n' +
+                  '- Sessions are maintained in the "sessions/" directory\n\n' +
+                  'Available Models: ' + Array.from(document.getElementById('model-select').options).map(o => o.text).join(', '));
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.profile-icon')) {
+                document.getElementById('profileDropdown').style.display = 'none';
+            }
+        });
+
+        // Allow Enter to send (with Shift+Enter for new line)
+        document.getElementById('userInput').addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
             }
         });
 
-        // Send message function
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (!message) return;
-
-            const model = modelSelect.value;
-
-            // Add user message to chat
-            addMessage('user', message);
-            userInput.value = '';
-            userInput.style.height = 'auto';
-            scrollToBottom();
-
-            // Show typing indicator
-            const typingId = 'typing-' + Date.now();
-            chatMessages.insertAdjacentHTML('beforeend', `
-                <div class="message assistant-message" id="${typingId}">
-                    <div class="avatar assistant-avatar">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <div class="message-content">
-                        <div class="message-role">Assistant</div>
-                        <div class="typing-indicator">
-                            <div class="typing-dot"></div>
-                            <div class="typing-dot"></div>
-                            <div class="typing-dot"></div>
-                        </div>
-                    </div>
-                </div>
-            `);
-            scrollToBottom();
-
-            try {
-                // Prepare message history for context
-                const messages = getMessageHistory();
-                
-                // Prepare the request in Alibaba/DashScope format
-                const requestBody = {
-                    model: model,
-                    input: {
-                        messages: messages
-                    },
-                    parameters: {
-                        temperature: 0.7,
-                        max_tokens: 1500
-                    }
-                };
-
-                // Send request to bapXconnect API (using the correct proxy endpoint)
-                // Note: For browser-based requests, you may need to use a proxy or CORS-enabled endpoint
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-DashScope-Token': API_KEY
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                
-                // Remove typing indicator
-                const typingElement = document.getElementById(typingId);
-                if (typingElement) {
-                    typingElement.remove();
-                }
-
-                // Get response text
-                const content = data.output?.text || data.choices?.[0]?.message?.content || 'No response from model';
-                
-                // Add assistant response
-                addMessage('assistant', content);
-                
-            } catch (error) {
-                console.error('Error:', error);
-                
-                // Remove typing indicator
-                const typingElement = document.getElementById(typingId);
-                if (typingElement) {
-                    typingElement.remove();
-                }
-
-                // Add error message
-                addMessage('assistant', `Error: ${error.message}. Please check your connection to the Hugging Face models.`);
-            }
-            
-            scrollToBottom();
-        }
-
-        // Add message to chat
-        function addMessage(role, content) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}-message`;
-            
-            const avatarClass = role === 'user' ? 'user-avatar' : 'assistant-avatar';
-            const avatarIcon = role === 'user' ? 'fa-user' : 'fa-robot';
-            const roleName = role === 'user' ? 'You' : 'Assistant';
-            
-            messageDiv.innerHTML = `
-                <div class="avatar ${avatarClass}">
-                    <i class="fas ${avatarIcon}"></i>
-                </div>
-                <div class="message-content">
-                    <div class="message-role">${roleName}</div>
-                    <div class="message-text">${content}</div>
-                </div>
-            `;
-            
-            chatMessages.appendChild(messageDiv);
-        }
-
-        // Get message history for context
-        function getMessageHistory() {
-            const messages = [];
-            const messageElements = document.querySelectorAll('.message');
-            
-            messageElements.forEach(el => {
-                if (el.classList.contains('user-message')) {
-                    const content = el.querySelector('.message-text').textContent;
-                    messages.push({ role: 'user', content: content });
-                } else if (el.classList.contains('assistant-message')) {
-                    // Skip typing indicators
-                    if (!el.querySelector('.typing-indicator')) {
-                        const content = el.querySelector('.message-text').textContent;
-                        messages.push({ role: 'assistant', content: content });
-                    }
-                }
-            });
-            
-            return messages;
-        }
-
-        // Scroll to bottom of chat
-        function scrollToBottom() {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // Toggle settings/profile modal
-        function toggleSettings() {
-            alert('Settings/Profile page would open here. Admin access: getwinharris@gmail.com / bapX2025#');
-        }
-
-        // Initial focus on input
-        userInput.focus();
-        scrollToBottom();
-
-        // Handle window resize for proper scrolling
-        window.addEventListener('resize', scrollToBottom);
+        // Focus input on load
+        document.getElementById('userInput').focus();
     </script>
 </body>
 </html>

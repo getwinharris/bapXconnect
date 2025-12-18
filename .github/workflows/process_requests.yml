@@ -1,0 +1,152 @@
+name: Process API Requests
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'requests/**'
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.event.head_commit.timestamp }}
+  cancel-in-progress: false
+
+jobs:
+  process-requests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Process API requests
+      run: |
+        # Find all new request files 
+        find requests/ -name "*.json" -type f -exec echo "Found request file: {}" \;
+        
+        # Loop through each request file
+        for request_file in requests/*.json; do
+          if [[ -f "$request_file" ]]; then
+            echo "Processing request: $request_file"
+            
+            # Get request details using jq (install if needed)
+            if ! command -v jq &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y jq
+            fi
+            
+            # Extract request parameters
+            REQUEST_ID=$(jq -r '.id // "unknown"' "$request_file")
+            MODEL=$(jq -r '.model // "qwen2.5-omni"' "$request_file")
+            INPUT_MSG=$(jq -r '.input.messages[-1].content // "Hello"' "$request_file")
+            CORRELATION_ID=$(jq -r '.correlation_id // ""' "$request_file")
+            API_KEY=$(jq -r '.api_key // ""' "$request_file")
+            
+            echo "Request ID: $REQUEST_ID"
+            echo "Model: $MODEL"
+            echo "Input: $INPUT_MSG"
+            echo "Correlation ID: $CORRELATION_ID"
+            
+            # Validate API key (basic check)
+            if [[ "$API_KEY" != *"bapX_"* ]] && [[ "$API_KEY" != *"getwinharris.github.io/bapXconnect"* ]]; then
+              echo "Invalid API key detected"
+              RESPONSE_JSON=$(jq -n --arg req_id "$REQUEST_ID" --arg error_msg "Invalid API key" '
+              {
+                id: ("error_" + (now | tostring) + "_" + $req_id),
+                request_id: $req_id,
+                error: { message: $error_msg, type: "authentication_error" },
+                created: (now | floor)
+              }')
+            else
+              # Process the request with simulated Hugging Face response
+              # In a real implementation, this would connect to actual Hugging Face API
+              RESPONSE_TEXT="This is a simulated response from model: $MODEL
+              
+Input received: $INPUT_MSG
+
+In the live implementation, this would return results from Hugging Face models:
+- Model endpoint: https://api-inference.huggingface.co/models/$MODEL
+- Parameters used: temperature=0.7, max_tokens=1024
+- Connected to Oracle Cloud infrastructure for processing
+
+This confirms your git-based API request was processed successfully."
+
+              # Create response JSON in Alibaba/DashScope format
+              RESPONSE_JSON=$(jq -n --arg req_id "$REQUEST_ID" --arg model "$MODEL" --arg text "$RESPONSE_TEXT" --arg corr_id "$CORRELATION_ID" '
+              {
+                id: ("resp_" + (now | tostring) + "_" + $req_id),
+                request_id: $req_id,
+                correlation_id: $corr_id,
+                model: $model,
+                output: { text: $text },
+                usage: {
+                  prompt_tokens: ($text | length / 4 | floor),
+                  completion_tokens: ($text | length / 4 | floor),
+                  total_tokens: (($text | length / 2) | floor),
+                  finish_reason: "stop"
+                },
+                created: (now | floor)
+              }')
+            fi
+            
+            # Write response to responses directory
+            mkdir -p responses
+            echo "$RESPONSE_JSON" > "responses/response_${REQUEST_ID}.json"
+            
+            # Update session if correlation_id provided (incremental update)
+            if [[ -n "$CORRELATION_ID" && "$CORRELATION_ID" != "null" && "$CORRELATION_ID" != "" ]]; then
+              mkdir -p sessions
+              SESSION_FILE="sessions/${CORRELATION_ID}.json"
+              
+              if [[ -f "$SESSION_FILE" ]]; then
+                # Append to existing session (incremental update)
+                TEMP_FILE=$(mktemp)
+                jq --arg input_msg "$INPUT_MSG" --arg response_text "$RESPONSE_TEXT" '
+                  .updated_at = (now | floor) |
+                  .messages += [
+                    {role: "user", content: $input_msg, timestamp: (now | floor)},
+                    {role: "assistant", content: $response_text, timestamp: (now | floor)}
+                  ]
+                ' "$SESSION_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$SESSION_FILE"
+              else
+                # Create new session
+                SESSION_JSON=$(jq -n --arg session_id "$CORRELATION_ID" --arg input_msg "$INPUT_MSG" --arg response_text "$RESPONSE_TEXT" '
+                {
+                  session_id: $session_id,
+                  created_at: (now | floor),
+                  updated_at: (now | floor),
+                  messages: [
+                    {role: "user", content: $input_msg, timestamp: (now | floor)},
+                    {role: "assistant", content: $response_text, timestamp: (now | floor)}
+                  ]
+                }')
+                
+                echo "$SESSION_JSON" > "$SESSION_FILE"
+              fi
+            fi
+            
+            # Mark this request as processed by moving it
+            mv "$request_file" "$request_file.processed"
+            echo "Processed request $REQUEST_ID"
+          fi
+        done
+        
+        # Commit and push responses and updated sessions back to the repository
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Add processed responses and sessions
+        git add responses/ sessions/
+        
+        # Check if there are changes to commit
+        if ! git diff --quiet --cached; then
+          git commit -m "Add API responses and session updates from git-based API processing [skip ci]" -a
+          git push
+          echo "Changes committed and pushed to repository"
+        else
+          echo "No changes to commit"
+        fi

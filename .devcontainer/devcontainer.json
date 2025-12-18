@@ -1,0 +1,12 @@
+name: bapXconnect Development Environment
+image: mcr.microsoft.com/devcontainers/javascript-node:18
+
+features:
+  python: 3.11
+
+customizations:
+  vscode:
+    extensions:
+      - ms-vscode.vscode-json
+      - bradlc.vscode-tailwindcss
+      - esbenp.prettier-vscode

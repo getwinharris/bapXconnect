@@ -1,48 +1,55 @@
 {
+  "gitBasedApi": {
+    "requestDirectory": "requests/",
+    "responseDirectory": "responses/",
+    "sessionDirectory": "sessions/",
+    "workflowTrigger": "push to main branch",
+    "processingInterval": "instant (via GitHub Actions)"
+  },
   "api": {
-    "endpoint": "https://getwinharris.github.io/bapXconnect/api",
+    "baseUrl": "https://getwinharris.github.io/bapXconnect/api",
     "version": "v1",
-    "model": "qwen3-omni-30b-a3b-instruct",
+    "defaultModel": "qwen3-omni-30b-a3b-instruct",
     "apiKey": "getwinharris.github.io/bapXconnect/api",
-    "timeout": 30000,
-    "maxRetries": 3,
     "authHeader": "X-DashScope-Token"
   },
   "session": {
-    "storagePath": "Client Application Storage (varies by app)/",
-    "contextWindowSize": 32768,
-    "persistContext": true
-  },
-  "multimodal": {
-    "imageSupport": true,
-    "audioSupport": true,
-    "videoSupport": true,
-    "maxAttachmentSize": "50MB"
-  },
-  "bapxModel": {
-    "path": "https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct/tree/main",
-    "quantization": "4bit",
-    "gpu": {
-      "enabled": false,
-      "memoryRequired": "0GB"
-    }
+    "storagePath": "sessions/",
+    "format": "json",
+    "updateStrategy": "incremental",
+    "ttlHours": 24
   },
   "models": {
     "qwen3-omni-30b-a3b-instruct": {
-      "path": "https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct",
-      "type": "multimodal"
+      "path": "https://api-inference.huggingface.co/models/Qwen/Qwen3-Omni-30B-A3B-Instruct",
+      "type": "multimodal",
+      "capabilities": ["text", "image", "audio", "video", "speech_output", "multilingual"]
     },
     "qwen2.5-omni": {
-      "path": "https://huggingface.co/Qwen/Qwen2.5-Omni-7B",
-      "type": "multimodal"
+      "path": "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Omni-7B",
+      "type": "multimodal",
+      "capabilities": ["text", "image", "audio", "video", "speech_output"]
     },
     "qwen2.5-coder": {
-      "path": "https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct",
-      "type": "coding"
+      "path": "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-7B-Instruct",
+      "type": "coding",
+      "capabilities": ["code_generation", "debugging", "explanation", "text"]
     },
     "llama3": {
-      "path": "https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct",
-      "type": "text"
+      "path": "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct",
+      "type": "text",
+      "capabilities": ["text_generation", "reasoning", "general_purpose"]
     }
+  },
+  "githubActions": {
+    "workflowFile": ".github/workflows/process_requests.yml",
+    "triggerEvent": "push to requests/ directory",
+    "processingTimeout": "10 minutes",
+    "rateLimit": "based on GitHub Actions limits"
+  },
+  "apiKeys": {
+    "format": "bapX_[app-name]_[random]_[timestamp]",
+    "validation": "against admin panel registry",
+    "accessLevel": "per_app_isolated"
   }
 }

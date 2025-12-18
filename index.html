@@ -3,375 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bapXconnect - AI Model API Gateway</title>
+    <title>bapXconnect - AI Chat Interface</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: #e6e6e6;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #f1f5f9;
             min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            display: flex;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
-            border-radius: 20px;
-            overflow: hidden;
-            height: 80vh;
-            background: rgba(15, 32, 39, 0.9);
-        }
-
-        .left-panel {
-            flex: 1;
-            background: linear-gradient(135deg, #141e30, #243b55);
-            padding: 50px 40px;
-            display: flex;
             flex-direction: column;
-            justify-content: center;
-            color: white;
-            position: relative;
             overflow: hidden;
         }
 
-        .left-panel::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(76,201,240,0.1) 0%, rgba(15,32,39,0) 70%);
-            z-index: 0;
-        }
-
-        .left-content {
-            position: relative;
-            z-index: 1;
+        .header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 24px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #60a5fa;
         }
 
         .logo i {
-            font-size: 2.5rem;
-            color: #4cc9f0;
+            color: #3b82f6;
         }
 
-        .logo h1 {
-            font-size: 2rem;
-            background: linear-gradient(45deg, #4cc9f0, #f72585);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-        }
-
-        .description {
-            font-size: 1.1rem;
-            line-height: 1.7;
-            margin-bottom: 30px;
-            color: #c2cbd2;
-        }
-
-        .features {
-            list-style: none;
-            margin: 30px 0;
-        }
-
-        .features li {
-            padding: 12px 0;
+        .controls {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1rem;
+            gap: 16px;
         }
 
-        .features li i {
-            color: #4cc9f0;
-            font-size: 1.2rem;
+        .model-selector {
+            position: relative;
         }
 
-        .right-panel {
+        select {
+            background: rgba(30, 41, 59, 0.8);
+            color: #e2e8f0;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 8px 12px;
+            padding-right: 30px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+        }
+
+        select:hover {
+            border-color: #60a5fa;
+        }
+
+        .profile-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #475569;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #60a5fa;
+            transition: all 0.2s ease;
+        }
+
+        .profile-btn:hover {
+            border-color: #60a5fa;
+            background: rgba(30, 64, 175, 0.2);
+        }
+
+        .chat-container {
             flex: 1;
-            background: rgba(15, 32, 39, 0.95);
-            padding: 50px 40px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            position: relative;
+            max-height: calc(100vh - 70px);
         }
 
-        .login-container {
-            width: 100%;
-            max-width: 400px;
+        .chat-messages {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            gap: 16px;
+            max-width: 800px;
             margin: 0 auto;
+            width: 100%;
+            animation: fadeIn 0.3s ease;
         }
 
-        .welcome-text {
-            margin-bottom: 40px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .welcome-text h2 {
-            font-size: 2rem;
-            color: #4cc9f0;
-            margin-bottom: 10px;
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
         }
 
-        .welcome-text p {
-            color: #a9d6e5;
-            font-size: 1.1rem;
+        .user-avatar {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
         }
 
-        .form-group {
-            margin-bottom: 25px;
+        .assistant-avatar {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #a9d6e5;
-            font-weight: 500;
+        .message-content {
+            flex: 1;
+            padding-top: 4px;
         }
 
-        .input-with-icon {
+        .message-role {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .message-text {
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .user-message .message-text {
+            color: #e2e8f0;
+        }
+
+        .assistant-message .message-text {
+            color: #cbd5e1;
+        }
+
+        .input-container {
+            padding: 24px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #334155;
+        }
+
+        .input-area {
+            max-width: 800px;
+            margin: 0 auto;
             position: relative;
         }
 
-        .input-with-icon i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #4cc9f0;
-        }
-
-        input {
+        textarea {
             width: 100%;
-            padding: 15px 15px 15px 45px;
-            border-radius: 8px;
-            border: 1px solid #4361ee;
-            background: rgba(25, 50, 60, 0.8);
-            color: white;
+            background: rgba(30, 41, 59, 0.8);
+            color: #e2e8f0;
+            border: 1px solid #475569;
+            border-radius: 16px;
+            padding: 16px 50px 16px 16px;
             font-size: 1rem;
-        }
-
-        input:focus {
+            resize: none;
+            min-height: 60px;
+            max-height: 200px;
+            line-height: 1.5;
             outline: none;
-            border-color: #4cc9f0;
-            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
         }
 
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            background: linear-gradient(45deg, #4361ee, #3a0ca3);
+        textarea:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+
+        .send-btn {
+            position: absolute;
+            right: 16px;
+            bottom: 16px;
+            background: #3b82f6;
             color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+        }
+
+        .send-btn:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            background: #64748b;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-footer {
+            text-align: center;
+            padding: 16px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            border-top: 1px solid #334155;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+            
+            .chat-messages {
+                padding: 16px;
+            }
+            
+            .message {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            
+            .input-container {
+                padding: 16px;
+            }
+            
+            .logo {
+                font-size: 1.3rem;
+            }
+            
+            select {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+                padding-right: 25px;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 0.9rem;
             margin-top: 10px;
         }
 
-        .login-btn:hover {
-            background: linear-gradient(45deg, #3a0ca3, #7209b7);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #94a3b8;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: typing 1.4s infinite ease-in-out;
         }
 
-        .admin-login {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #2c5364;
-        }
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
-        .admin-link {
-            color: #f72585;
-            text-decoration: none;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .admin-link:hover {
-            color: #4cc9f0;
-            transform: translateX(5px);
-        }
-
-        .model-info {
-            background: rgba(76, 201, 240, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 30px;
-            border-left: 4px solid #4cc9f0;
-        }
-
-        .model-info h3 {
-            color: #4cc9f0;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .model-info ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .model-info li {
-            padding: 8px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid rgba(76, 201, 240, 0.1);
-        }
-
-        .model-info li:last-child {
-            border-bottom: none;
-        }
-
-        .model-info i {
-            color: #f72585;
-        }
-
-        @media (max-width: 900px) {
-            .container {
-                flex-direction: column;
-                height: auto;
-            }
-
-            .left-panel, .right-panel {
-                width: 100%;
-            }
-
-            .left-panel {
-                padding: 40px 30px;
-            }
-
-            .right-panel {
-                padding: 40px 30px;
-            }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="left-panel">
-            <div class="left-content">
-                <div class="logo">
-                    <i class="fas fa-brain"></i>
-                    <h1>bapXconnect</h1>
-                </div>
-                
-                <h2 style="font-size: 2.5rem; margin-bottom: 20px; color: #4cc9f0;">
-                    AI Model API Gateway
-                </h2>
-                
-                <p class="description">
-                    Connect to cutting-edge AI models hosted on Hugging Face infrastructure. 
-                    Access powerful multimodal models through a simple API interface.
-                </p>
-                
-                <ul class="features">
-                    <li><i class="fas fa-check-circle"></i> Access to Qwen Models (2.5-Omni, 2.5-Coder)</li>
-                    <li><i class="fas fa-check-circle"></i> Advanced Qwen3-Omni-30B Model Access</li>
-                    <li><i class="fas fa-check-circle"></i> Llama3 General Purpose Models</li>
-                    <li><i class="fas fa-check-circle"></i> Multimodal Capabilities (Text, Image, Audio)</li>
-                    <li><i class="fas fa-check-circle"></i> Secure API Key Management</li>
-                    <li><i class="fas fa-check-circle"></i> Real-time Model Testing</li>
-                </ul>
-
-                <div class="model-info">
-                    <h3><i class="fas fa-microchip"></i> Currently Available Models</h3>
-                    <ul>
-                        <li><i class="fas fa-robot"></i> Qwen3-Omni-30B-A3B-Instruct</li>
-                        <li><i class="fas fa-om"></i> Qwen2.5-Omni (Multimodal)</li>
-                        <li><i class="fas fa-code"></i> Qwen2.5-Coder (Code Assistant)</li>
-                        <li><i class="fas fa-comments"></i> Llama3 (General Text)</li>
-                    </ul>
-                </div>
-            </div>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-robot"></i>
+            <span>bapXconnect</span>
         </div>
-
-        <div class="right-panel">
-            <div class="login-container">
-                <div class="welcome-text">
-                    <h2>Welcome Back</h2>
-                    <p>Sign in to access the bapXconnect API playground</p>
-                </div>
-
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" id="email" placeholder="Enter your email" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-lock"></i>
-                            <input type="password" id="password" placeholder="Enter your password" required>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="login-btn">
-                        <i class="fas fa-sign-in-alt"></i> Sign In
-                    </button>
-                </form>
-
-                <div class="admin-login">
-                    <p>New to bapXconnect?</p>
-                    <a href="#" class="admin-link" onclick="showAdminLogin()">
-                        <i class="fas fa-user-shield"></i> Admin Access Only
-                    </a>
-                </div>
+        <div class="controls">
+            <div class="model-selector">
+                <select id="model-select">
+                    <option value="qwen3-omni-30b-a3b-instruct">Qwen3-Omni-30B</option>
+                    <option value="qwen2.5-omni" selected>Qwen2.5-Omni</option>
+                    <option value="qwen2.5-coder">Qwen2.5-Coder</option>
+                    <option value="llama3">Llama3</option>
+                </select>
+            </div>
+            <div class="profile-btn" onclick="toggleSettings()">
+                <i class="fas fa-user-gear"></i>
             </div>
         </div>
     </div>
 
+    <div class="chat-container">
+        <div class="chat-messages" id="chat-messages">
+            <div class="message assistant-message">
+                <div class="avatar assistant-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <div class="message-role">Assistant</div>
+                    <div class="message-text">Hello! I'm your AI assistant powered by bapXconnect. I'm currently using the Qwen2.5-Omni model. How can I help you today?</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <div class="input-area">
+                <textarea 
+                    id="user-input" 
+                    placeholder="Message bapXconnect..." 
+                    rows="1"
+                ></textarea>
+                <button class="send-btn" id="send-btn" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-footer">
+        bapXconnect AI • Powered by Hugging Face Models
+    </div>
+
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            // Check credentials
-            if (email === 'getwinharris@gmail.com' && password === 'bapX2025#') {
-                // Successful login - redirect to playground
-                window.location.href = 'api/ui/main.html';
-            } else {
-                alert('Invalid credentials. Admin login: getwinharris@gmail.com / bapX2025#');
+        // API Configuration
+        const API_URL = 'https://getwinharris.github.io/bapXconnect/api/api/v1/text/generation';
+        const API_KEY = 'getwinharris.github.io/bapXconnect/api';
+        
+        // DOM Elements
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const modelSelect = document.getElementById('model-select');
+
+        // Auto-resize textarea
+        userInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+        });
+
+        // Send message on Enter (without shift)
+        userInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
             }
         });
 
-        function showAdminLogin() {
-            alert('Admin access available. Credentials: getwinharris@gmail.com / bapX2025#');
+        // Send message function
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            const model = modelSelect.value;
+
+            // Add user message to chat
+            addMessage('user', message);
+            userInput.value = '';
+            userInput.style.height = 'auto';
+            scrollToBottom();
+
+            // Show typing indicator
+            const typingId = 'typing-' + Date.now();
+            chatMessages.insertAdjacentHTML('beforeend', `
+                <div class="message assistant-message" id="${typingId}">
+                    <div class="avatar assistant-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-role">Assistant</div>
+                        <div class="typing-indicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `);
+            scrollToBottom();
+
+            try {
+                // Prepare message history for context
+                const messages = getMessageHistory();
+                
+                // Prepare the request in Alibaba/DashScope format
+                const requestBody = {
+                    model: model,
+                    input: {
+                        messages: messages
+                    },
+                    parameters: {
+                        temperature: 0.7,
+                        max_tokens: 1500
+                    }
+                };
+
+                // Send request to bapXconnect API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-DashScope-Token': API_KEY
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                // Remove typing indicator
+                const typingElement = document.getElementById(typingId);
+                if (typingElement) {
+                    typingElement.remove();
+                }
+
+                // Get response text
+                const content = data.output?.text || data.choices?.[0]?.message?.content || 'No response from model';
+                
+                // Add assistant response
+                addMessage('assistant', content);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // Remove typing indicator
+                const typingElement = document.getElementById(typingId);
+                if (typingElement) {
+                    typingElement.remove();
+                }
+
+                // Add error message
+                addMessage('assistant', `Error: ${error.message}. Please check your connection to the Hugging Face models.`);
+            }
+            
+            scrollToBottom();
         }
+
+        // Add message to chat
+        function addMessage(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            
+            const avatarClass = role === 'user' ? 'user-avatar' : 'assistant-avatar';
+            const avatarIcon = role === 'user' ? 'fa-user' : 'fa-robot';
+            const roleName = role === 'user' ? 'You' : 'Assistant';
+            
+            messageDiv.innerHTML = `
+                <div class="avatar ${avatarClass}">
+                    <i class="fas ${avatarIcon}"></i>
+                </div>
+                <div class="message-content">
+                    <div class="message-role">${roleName}</div>
+                    <div class="message-text">${content}</div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+        }
+
+        // Get message history for context
+        function getMessageHistory() {
+            const messages = [];
+            const messageElements = document.querySelectorAll('.message');
+            
+            messageElements.forEach(el => {
+                if (el.classList.contains('user-message')) {
+                    const content = el.querySelector('.message-text').textContent;
+                    messages.push({ role: 'user', content: content });
+                } else if (el.classList.contains('assistant-message')) {
+                    // Skip typing indicators
+                    if (!el.querySelector('.typing-indicator')) {
+                        const content = el.querySelector('.message-text').textContent;
+                        messages.push({ role: 'assistant', content: content });
+                    }
+                }
+            });
+            
+            return messages;
+        }
+
+        // Scroll to bottom of chat
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Toggle settings/profile modal
+        function toggleSettings() {
+            alert('Settings/Profile page would open here. Admin access: getwinharris@gmail.com / bapX2025#');
+        }
+
+        // Initial focus on input
+        userInput.focus();
+        scrollToBottom();
+
+        // Handle window resize for proper scrolling
+        window.addEventListener('resize', scrollToBottom);
     </script>
 </body>
 </html>

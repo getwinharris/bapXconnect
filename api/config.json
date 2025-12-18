@@ -2,7 +2,7 @@
   "api": {
     "endpoint": "https://getwinharris.github.io/bapXconnect/api",
     "version": "v1",
-    "model": "qwen2.5-omni",
+    "model": "qwen3-omni-30b-a3b-instruct",
     "apiKey": "getwinharris.github.io/bapXconnect/api",
     "timeout": 30000,
     "maxRetries": 3,
@@ -20,11 +20,29 @@
     "maxAttachmentSize": "50MB"
   },
   "bapxModel": {
-    "path": "https://huggingface.co",
+    "path": "https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct/tree/main",
     "quantization": "4bit",
     "gpu": {
       "enabled": false,
       "memoryRequired": "0GB"
+    }
+  },
+  "models": {
+    "qwen3-omni-30b-a3b-instruct": {
+      "path": "https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct/tree/main",
+      "type": "multimodal"
+    },
+    "qwen2.5-omni": {
+      "path": "https://huggingface.co/Qwen/Qwen2.5-Omni-7B/tree/main",
+      "type": "multimodal"
+    },
+    "qwen2.5-coder": {
+      "path": "https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct/tree/main",
+      "type": "coding"
+    },
+    "llama3": {
+      "path": "https://huggingface.co/meta-llama/Llama-3-70B-Instruct/tree/main",
+      "type": "text"
     }
   }
 }

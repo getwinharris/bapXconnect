@@ -18,8 +18,8 @@ async function startBapXApi() {
   try {
     // Configuration for the bapX API connection
     const modelConfig = {
-      model: 'qwen2.5-omni',
-      modelPath: process.env.MODEL_PATH || 'https://huggingface.co', // Remote model path for bapX API
+      model: 'qwen3-omni-30b-a3b-instruct',
+      modelPath: process.env.MODEL_PATH || 'https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct/tree/main', // Remote model path for bapX API
       samplingParams: {
         temperature: 0.7,
         top_p: 0.8,

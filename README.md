@@ -43,8 +43,8 @@ Each project gets persistent memory in `Client Application Storage (varies by ap
 - Model configuration management
 
 ## Current Model Deployment
-- Model: Qwen/Qwen2.5-Omni-7B, Qwen/Qwen2.5-Coder-3B via Hugging Face
-- Hosted via Hugging Face endpoints
+- Model: Qwen/Qwen3-Omni-30B-A3B-Instruct, Qwen/Qwen2.5-Omni-7B, Qwen/Qwen2.5-Coder-3B via Hugging Face
+- Hosted via Hugging Face: https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct/tree/main
 - Accessed through Alibaba-style API format
 - Uses Thinker-Talker architecture for multimodal processing
 

@@ -116,27 +116,66 @@ export class BapXApiServer {
           });
         }
 
-        // In a real implementation, this would connect to the Hugging Face API or bapX server
-        // For now, we'll create a proper response based on the input without simulation
-        const responseText = await this.generateResponseFromModel(messages, {
+        // Connect to the appropriate Hugging Face model based on the model name
+        const modelUrl = this.getModelUrl(model);
+        if (!modelUrl) {
+          return res.status(400).json({
+            code: 'INVALID_MODEL',
+            message: `Model ${model} not supported`
+          });
+        }
+
+        // Prepare payload for Hugging Face inference API
+        // For now, convert our input format to what Hugging Face expects
+        const hfPayload = this.formatForHuggingFace(messages, {
           temperature,
           max_tokens,
           top_p
         });
 
-        // Format response in bapX/Alibaba-compatible format
-        res.json({
-          request_id: `req-${Date.now()}`,
-          output: {
-            text: responseText
-          },
-          usage: {
-            prompt_tokens: messages.reduce((acc, msg) => acc + (typeof msg.content === 'string' ? msg.content.length : JSON.stringify(msg.content).length), 0),
-            completion_tokens: responseText.length,
-            total_tokens: messages.reduce((acc, msg) => acc + (typeof msg.content === 'string' ? msg.content.length : JSON.stringify(msg.content).length), 0) + responseText.length,
-            finish_reason: 'stop'
+        try {
+          // Make the request to the actual Hugging Face model
+          const hfResponse = await fetch(modelUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              // Note: In real deployment, use proper Hugging Face token
+              // 'Authorization': `Bearer ${HF_API_TOKEN}`
+            },
+            body: JSON.stringify(hfPayload)
+          });
+
+          if (!hfResponse.ok) {
+            throw new Error(`Hugging Face API error: ${hfResponse.status} ${await hfResponse.text()}`);
           }
-        });
+
+          const hfData = await hfResponse.json();
+
+          // Process Hugging Face response and convert to our format
+          const responseText = Array.isArray(hfData) ? hfData[0]?.generated_text || hfData[0] : hfData?.generated_text || JSON.stringify(hfData);
+
+          // Format response in bapX/Alibaba-compatible format
+          res.json({
+            request_id: `req-${Date.now()}`,
+            output: {
+              text: responseText
+            },
+            usage: {
+              prompt_tokens: messages.reduce((acc, msg) => acc + (typeof msg.content === 'string' ? msg.content.length : JSON.stringify(msg.content).length), 0),
+              completion_tokens: responseText.length,
+              total_tokens: messages.reduce((acc, msg) => acc + (typeof msg.content === 'string' ? msg.content.length : JSON.stringify(msg.content).length), 0) + responseText.length,
+              finish_reason: 'stop'
+            }
+          });
+        } catch (hfError) {
+          console.error('Hugging Face API Error:', hfError);
+
+          // Return error response
+          res.status(500).json({
+            code: 'MODEL_ERROR',
+            message: `Error connecting to Hugging Face model: ${hfError instanceof Error ? hfError.message : String(hfError)}`
+          });
+        }
       } catch (error) {
         console.error('bapX API Error:', error);
         res.status(500).json({
@@ -228,6 +267,57 @@ Session context is maintained in Client Application Storage (varies by app)/`;
         ? msg.content
         : JSON.stringify(msg.content)
     }));
+  }
+
+  private getModelUrl(modelName: string): string | null {
+    // Map model names to their Hugging Face URLs
+    const modelUrls: { [key: string]: string } = {
+      'qwen3-omni-30b-a3b-instruct': 'https://api-inference.huggingface.co/models/Qwen/Qwen3-Omni-30B-A3B-Instruct',
+      'qwen2.5-omni': 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Omni-7B',
+      'qwen2.5-coder': 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-7B-Instruct',
+      'llama3': 'https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct',
+      // Shorter aliases
+      'qwen3-omni': 'https://api-inference.huggingface.co/models/Qwen/Qwen3-Omni-30B-A3B-Instruct',
+      'qwen2.5': 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Omni-7B',
+      'qwen2.5-coder-instruct': 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-Coder-7B-Instruct',
+      'llama-3': 'https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct'
+    };
+
+    return modelUrls[modelName] || null;
+  }
+
+  private formatForHuggingFace(messages: any[], options: {temperature: number, max_tokens: number, top_p: number}) {
+    // Convert our input format to Hugging Face format
+    // Hugging Face expects a different format depending on the model type
+
+    // For text generation models, we need to convert messages to a prompt
+    let prompt = '';
+    for (const msg of messages) {
+      const role = msg.role || 'user';
+      const content = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
+
+      if (role === 'user') {
+        prompt += `User: ${content}\n`;
+      } else if (role === 'assistant') {
+        prompt += `Assistant: ${content}\n`;
+      } else if (role === 'system') {
+        prompt += `System: ${content}\n`;
+      }
+    }
+
+    // Add instruction to the assistant
+    prompt += 'Assistant:';
+
+    return {
+      inputs: prompt,
+      parameters: {
+        temperature: options.temperature,
+        max_new_tokens: options.max_tokens,
+        top_p: options.top_p,
+        // Additional parameters that Hugging Face supports
+        return_full_text: false,  // Only return generated text, not the prompt
+      }
+    };
   }
 
   async start() {

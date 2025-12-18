@@ -29,19 +29,19 @@
   },
   "models": {
     "qwen3-omni-30b-a3b-instruct": {
-      "path": "https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct/tree/main",
+      "path": "https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct",
       "type": "multimodal"
     },
     "qwen2.5-omni": {
-      "path": "https://huggingface.co/Qwen/Qwen2.5-Omni-7B/tree/main",
+      "path": "https://huggingface.co/Qwen/Qwen2.5-Omni-7B",
       "type": "multimodal"
     },
     "qwen2.5-coder": {
-      "path": "https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct/tree/main",
+      "path": "https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct",
       "type": "coding"
     },
     "llama3": {
-      "path": "https://huggingface.co/meta-llama/Llama-3-70B-Instruct/tree/main",
+      "path": "https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct",
       "type": "text"
     }
   }

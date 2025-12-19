@@ -537,34 +537,113 @@
                 // 3. Push to GitHub to trigger the Action
                 // 4. Poll for response in responses directory
                 
-                // Simulate the git-based API process
-                setTimeout(async () => {
-                    // This simulates what the GitHub Action would return
-                    const responseContent = `This response comes from the bapXconnect API gateway connected to model: ${model}
-                    
+                // Actually implement the git-based API process using GitHub's API
+                // Create a unique filename for the request
+                const fileName = `requests/request_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.json`;
+
+                // Prepare the request payload (in Alibaba/DashScope format)
+                const requestPayload = {
+                    id: requestId,
+                    model: model,
+                    input: {
+                        messages: [
+                            { role: 'user', content: input }
+                        ]
+                    },
+                    parameters: {
+                        temperature: 0.7,
+                        max_tokens: 1024
+                    },
+                    correlation_id: currentSessionId,
+                    timestamp: Date.now()
+                };
+
+                // Encode the content as base64 for GitHub API
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(requestPayload, null, 2))));
+
+                // Attempt to create the file via GitHub API (would need proper auth in real implementation)
+                try {
+                    // This is where we would actually commit to the repository
+                    // In a real implementation, we'd use GitHub's authenticated API
+                    const response = await fetch(`https://api.github.com/repos/getwinharris/bapXconnect/contents/${fileName}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'token YOUR_TOKEN_HERE', // This would need to be properly secured
+                            'Accept': 'application/vnd.github.v3+json'
+                        },
+                        body: JSON.stringify({
+                            message: `Add API request from web interface [skip ci]`,
+                            content: content,
+                            branch: 'main'
+                        })
+                    });
+
+                    if (response.ok) {
+                        // Wait for GitHub Action to process the request (polling approach)
+                        await waitForResponse(requestId);
+                    } else {
+                        // Fallback to simulated response if GitHub API fails
+                        throw new Error('GitHub API commit failed');
+                    }
+                } catch (error) {
+                    console.error('GitHub API Error:', error);
+
+                    // Fallback response if direct GitHub commit isn't possible
+                    const fallbackResponse = `This is a simulated response from model: ${model}
+
 Input received: ${input}
 
-In the live implementation, this request would be processed through:
-- Git commit to the requests directory
-- GitHub Action processing the request
-- Response written to the responses directory
-- Your interface reading the response file
+In the live implementation, this would be processed through the git-based API system:
+- Request would be committed to the requests/ directory
+- GitHub Action would automatically process the request
+- Response would be written to responses/ directory
+- Session memory would be updated in sessions/ directory
 
-This demonstrates the git-based API communication system is working.`;
-                    
-                    // Add response to UI
+Due to browser security limitations, direct GitHub commits require proper authentication which is not implemented in this demo.`;
+
                     document.getElementById('typingIndicator').style.display = 'none';
-                    addMessage('assistant', responseContent);
-                    messages.push({ role: 'assistant', content: responseContent });
-                    
-                    // In a real implementation, we'd create the response file and commit it
-                    // This would happen in the GitHub Action, not in the browser
-                }, 2000);
-
+                    addMessage('assistant', fallbackResponse);
+                    messages.push({ role: 'assistant', content: fallbackResponse });
+                }
             } catch (error) {
                 document.getElementById('typingIndicator').style.display = 'none';
                 addMessage('assistant', `Error: ${error.message}`);
             }
+        }
+
+        // Function to poll for response after submitting request
+        async function waitForResponse(requestId) {
+            const maxAttempts = 30; // Poll for up to 3 minutes
+            const pollInterval = 5000; // Poll every 5 seconds
+
+            for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                try {
+                    // Try to fetch the response file from GitHub
+                    const response = await fetch(`https://raw.githubusercontent.com/getwinharris/bapXconnect/main/responses/response_${requestId}.json`);
+
+                    if (response.ok) {
+                        const responseData = await response.json();
+                        const content = responseData.output?.text || responseData.choices?.[0]?.message?.content || 'No response content found';
+
+                        document.getElementById('typingIndicator').style.display = 'none';
+                        addMessage('assistant', content);
+                        messages.push({ role: 'assistant', content: content });
+                        return; // Success, exit polling
+                    } else if (response.status !== 404) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                } catch (error) {
+                    console.error(`Poll attempt ${attempt + 1} failed:`, error);
+                }
+
+                // Wait before next poll attempt
+                await new Promise(resolve => setTimeout(resolve, pollInterval));
+            }
+
+            // If we reach here, polling timed out
+            document.getElementById('typingIndicator').style.display = 'none';
+            addMessage('assistant', `Timeout waiting for response to request ${requestId}. The GitHub Action may still be processing your request.`);
         }
 
         function clearChat() {

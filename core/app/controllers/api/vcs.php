@@ -1,6 +1,8 @@
 <?php
 
 use bapXdb\Auth\OAuth2\Github as OAuth2Github;
+use bapXdb\Auth\OAuth2\Gitlab as OAuth2Gitlab;
+use bapXdb\Auth\OAuth2\Bitbucket as OAuth2Bitbucket;
 use bapXdb\Event\Build;
 use bapXdb\Event\Delete;
 use bapXdb\Extend\Exception;
@@ -71,6 +73,8 @@ use Utopia\Validator\Boolean;
 use Utopia\Validator\Text;
 use Utopia\Validator\WhiteList;
 use Utopia\VCS\Adapter\Git\GitHub;
+use Utopia\VCS\Adapter\Git\GitLab;
+use Utopia\VCS\Adapter\Git\Bitbucket;
 use Utopia\VCS\Exception\FileNotFound;
 use Utopia\VCS\Exception\RepositoryNotFound;
 
@@ -709,6 +713,302 @@ App::get('/v1/vcs/github/callback')
             ->redirect($redirectSuccess);
     });
 
+App::get('/v1/vcs/gitlab/authorize')
+    ->desc('Create GitLab app installation')
+    ->groups(['api', 'vcs'])
+    ->label('scope', 'vcs.read')
+    ->label('error', __DIR__ . '/../../views/general/error.phtml')
+    ->label('sdk', new Method(
+        namespace: 'vcs',
+        group: 'installations',
+        name: 'createGitLabInstallation',
+        description: '/docs/references/vcs/create-gitlab-installation.md',
+        auth: [AuthType::ADMIN],
+        responses: [
+            new SDKResponse(
+                code: Response::STATUS_CODE_MOVED_PERMANENTLY,
+                model: Response::MODEL_NONE,
+            )
+        ],
+        contentType: ContentType::HTML,
+        type: MethodType::WEBAUTH,
+        hide: true,
+    ))
+    ->param('success', '', fn ($redirectValidator) => $redirectValidator, 'URL to redirect back to console after a successful installation attempt.', true, ['redirectValidator'])
+    ->param('failure', '', fn ($redirectValidator) => $redirectValidator, 'URL to redirect back to console after a failed installation attempt.', true, ['redirectValidator'])
+    ->inject('response')
+    ->inject('project')
+    ->inject('platform')
+    ->action(function (string $success, string $failure, Response $response, Document $project, array $platform) {
+        $state = \json_encode([
+            'projectId' => $project->getId(),
+            'success' => $success,
+            'failure' => $failure,
+        ]);
+
+        $clientId = System::getEnv('_APP_VCS_GITLAB_CLIENT_ID');
+        $protocol = System::getEnv('_APP_OPTIONS_FORCE_HTTPS') === 'disabled' ? 'http' : 'https';
+        $hostname = $platform['consoleHostname'] ?? '';
+
+        if (empty($clientId)) {
+            throw new Exception(Exception::GENERAL_SERVER_ERROR, 'GitLab Client ID is not configured. Please configure VCS (Version Control System) variables in .env file.');
+        }
+
+        $oauth2 = new OAuth2Gitlab($clientId, System::getEnv('_APP_VCS_GITLAB_CLIENT_SECRET', ''), $protocol . '://' . $hostname . "/v1/vcs/gitlab/callback", $state, ['api', 'read_repository', 'write_repository']);
+
+        $response
+            ->addHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->addHeader('Pragma', 'no-cache')
+            ->redirect($oauth2->getLoginUrl());
+    });
+
+App::get('/v1/vcs/gitlab/callback')
+    ->desc('Get installation and authorization from GitLab app')
+    ->groups(['api', 'vcs'])
+    ->label('scope', 'public')
+    ->label('error', __DIR__ . '/../../views/general/error.phtml')
+    ->param('state', '', new Text(2048), 'GitLab state. Contains info sent when starting authorization flow.', true)
+    ->param('code', '', new Text(2048, 0), 'OAuth2 code. This is a temporary code that the will be later exchanged for an access token.', true)
+    ->inject('gitLab')
+    ->inject('user')
+    ->inject('project')
+    ->inject('response')
+    ->inject('dbForPlatform')
+    ->inject('platform')
+    ->action(function (string $state, string $code, GitLab $gitlab, Document $user, Document $project, Response $response, Database $dbForPlatform, array $platform) {
+        if (empty($state)) {
+            throw new Exception(Exception::GENERAL_ARGUMENT_INVALID, 'State is missing.');
+        }
+
+        $state = \json_decode($state, true);
+        $projectId = $state['projectId'] ?? '';
+
+        $project = $dbForPlatform->getDocument('projects', $projectId);
+
+        if ($project->isEmpty()) {
+            throw new Exception(Exception::PROJECT_NOT_FOUND, 'Project with the ID from state could not be found.');
+        }
+
+        $region = $project->getAttribute('region', 'default');
+        $protocol = System::getEnv('_APP_OPTIONS_FORCE_HTTPS') === 'disabled' ? 'http' : 'https';
+        $hostname = $platform['consoleHostname'] ?? '';
+
+        $defaultState = [
+            'success' => $protocol . '://' . $hostname . "/console/project-$region-$projectId/settings/git-installations",
+            'failure' => $protocol . '://' . $hostname . "/console/project-$region-$projectId/settings/git-installations",
+        ];
+
+        $state = \array_merge($defaultState, $state ?? []);
+
+        $redirectSuccess = $state['success'] ?? '';
+        $redirectFailure = $state['failure'] ?? '';
+
+        if (!empty($code)) {
+            $oauth2 = new OAuth2Gitlab(System::getEnv('_APP_VCS_GITLAB_CLIENT_ID', ''), System::getEnv('_APP_VCS_GITLAB_CLIENT_SECRET', ''), "");
+
+            $accessToken = $oauth2->getAccessToken($code) ?? '';
+            $refreshToken = $oauth2->getRefreshToken($code) ?? '';
+            $accessTokenExpiry = DateTime::addSeconds(new \DateTime(), \intval($oauth2->getAccessTokenExpiry($code)));
+
+            $owner = $oauth2->getUserSlug($accessToken) ?? '';
+            $providerInstallationId = $oauth2->getUserID($accessToken) ?? '';
+
+            $projectInternalId = $project->getSequence();
+
+            $installation = $dbForPlatform->findOne('installations', [
+                Query::equal('providerInstallationId', [$providerInstallationId]),
+                Query::equal('projectInternalId', [$projectInternalId]),
+                Query::equal('provider', ['gitlab'])
+            ]);
+
+            if ($installation->isEmpty()) {
+                $teamId = $project->getAttribute('teamId', '');
+
+                $installation = new Document([
+                    '$id' => ID::unique(),
+                    '$permissions' => [
+                        Permission::read(Role::team(ID::custom($teamId))),
+                        Permission::update(Role::team(ID::custom($teamId), 'owner')),
+                        Permission::update(Role::team(ID::custom($teamId), 'developer')),
+                        Permission::delete(Role::team(ID::custom($teamId), 'owner')),
+                        Permission::delete(Role::team(ID::custom($teamId), 'developer')),
+                    ],
+                    'providerInstallationId' => $providerInstallationId,
+                    'projectId' => $projectId,
+                    'projectInternalId' => $projectInternalId,
+                    'provider' => 'gitlab',
+                    'organization' => $owner,
+                    'personal' => true,
+                    'personalRefreshToken' => $refreshToken,
+                    'personalAccessToken' => $accessToken,
+                    'personalAccessTokenExpiry' => $accessTokenExpiry,
+                ]);
+
+                $installation = $dbForPlatform->createDocument('installations', $installation);
+            } else {
+                $installation = $installation
+                    ->setAttribute('organization', $owner)
+                    ->setAttribute('personalRefreshToken', $refreshToken)
+                    ->setAttribute('personalAccessToken', $accessToken)
+                    ->setAttribute('personalAccessTokenExpiry', $accessTokenExpiry);
+                $installation = $dbForPlatform->updateDocument('installations', $installation->getId(), $installation);
+            }
+        }
+
+        $response
+            ->addHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->addHeader('Pragma', 'no-cache')
+            ->redirect($redirectSuccess);
+    });
+
+App::get('/v1/vcs/bitbucket/authorize')
+    ->desc('Create Bitbucket app installation')
+    ->groups(['api', 'vcs'])
+    ->label('scope', 'vcs.read')
+    ->label('error', __DIR__ . '/../../views/general/error.phtml')
+    ->label('sdk', new Method(
+        namespace: 'vcs',
+        group: 'installations',
+        name: 'createBitbucketInstallation',
+        description: '/docs/references/vcs/create-bitbucket-installation.md',
+        auth: [AuthType::ADMIN],
+        responses: [
+            new SDKResponse(
+                code: Response::STATUS_CODE_MOVED_PERMANENTLY,
+                model: Response::MODEL_NONE,
+            )
+        ],
+        contentType: ContentType::HTML,
+        type: MethodType::WEBAUTH,
+        hide: true,
+    ))
+    ->param('success', '', fn ($redirectValidator) => $redirectValidator, 'URL to redirect back to console after a successful installation attempt.', true, ['redirectValidator'])
+    ->param('failure', '', fn ($redirectValidator) => $redirectValidator, 'URL to redirect back to console after a failed installation attempt.', true, ['redirectValidator'])
+    ->inject('response')
+    ->inject('project')
+    ->inject('platform')
+    ->action(function (string $success, string $failure, Response $response, Document $project, array $platform) {
+        $state = \json_encode([
+            'projectId' => $project->getId(),
+            'success' => $success,
+            'failure' => $failure,
+        ]);
+
+        $clientId = System::getEnv('_APP_VCS_BITBUCKET_CLIENT_ID');
+        $protocol = System::getEnv('_APP_OPTIONS_FORCE_HTTPS') === 'disabled' ? 'http' : 'https';
+        $hostname = $platform['consoleHostname'] ?? '';
+
+        if (empty($clientId)) {
+            throw new Exception(Exception::GENERAL_SERVER_ERROR, 'Bitbucket Client ID is not configured. Please configure VCS (Version Control System) variables in .env file.');
+        }
+
+        $oauth2 = new OAuth2Bitbucket($clientId, System::getEnv('_APP_VCS_BITBUCKET_CLIENT_SECRET', ''), $protocol . '://' . $hostname . "/v1/vcs/bitbucket/callback", $state, ['repository', 'account']);
+
+        $response
+            ->addHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->addHeader('Pragma', 'no-cache')
+            ->redirect($oauth2->getLoginUrl());
+    });
+
+App::get('/v1/vcs/bitbucket/callback')
+    ->desc('Get installation and authorization from Bitbucket app')
+    ->groups(['api', 'vcs'])
+    ->label('scope', 'public')
+    ->label('error', __DIR__ . '/../../views/general/error.phtml')
+    ->param('state', '', new Text(2048), 'Bitbucket state. Contains info sent when starting authorization flow.', true)
+    ->param('code', '', new Text(2048, 0), 'OAuth2 code. This is a temporary code that the will be later exchanged for an access token.', true)
+    ->inject('bitbucket')
+    ->inject('user')
+    ->inject('project')
+    ->inject('response')
+    ->inject('dbForPlatform')
+    ->inject('platform')
+    ->action(function (string $state, string $code, Bitbucket $bitbucket, Document $user, Document $project, Response $response, Database $dbForPlatform, array $platform) {
+        if (empty($state)) {
+            throw new Exception(Exception::GENERAL_ARGUMENT_INVALID, 'State is missing.');
+        }
+
+        $state = \json_decode($state, true);
+        $projectId = $state['projectId'] ?? '';
+
+        $project = $dbForPlatform->getDocument('projects', $projectId);
+
+        if ($project->isEmpty()) {
+            throw new Exception(Exception::PROJECT_NOT_FOUND, 'Project with the ID from state could not be found.');
+        }
+
+        $region = $project->getAttribute('region', 'default');
+        $protocol = System::getEnv('_APP_OPTIONS_FORCE_HTTPS') === 'disabled' ? 'http' : 'https';
+        $hostname = $platform['consoleHostname'] ?? '';
+
+        $defaultState = [
+            'success' => $protocol . '://' . $hostname . "/console/project-$region-$projectId/settings/git-installations",
+            'failure' => $protocol . '://' . $hostname . "/console/project-$region-$projectId/settings/git-installations",
+        ];
+
+        $state = \array_merge($defaultState, $state ?? []);
+
+        $redirectSuccess = $state['success'] ?? '';
+        $redirectFailure = $state['failure'] ?? '';
+
+        if (!empty($code)) {
+            $oauth2 = new OAuth2Bitbucket(System::getEnv('_APP_VCS_BITBUCKET_CLIENT_ID', ''), System::getEnv('_APP_VCS_BITBUCKET_CLIENT_SECRET', ''), "");
+
+            $accessToken = $oauth2->getAccessToken($code) ?? '';
+            $refreshToken = $oauth2->getRefreshToken($code) ?? '';
+            $accessTokenExpiry = DateTime::addSeconds(new \DateTime(), \intval($oauth2->getAccessTokenExpiry($code)));
+
+            $owner = $oauth2->getUserSlug($accessToken) ?? '';
+            $providerInstallationId = $oauth2->getUserID($accessToken) ?? '';
+
+            $projectInternalId = $project->getSequence();
+
+            $installation = $dbForPlatform->findOne('installations', [
+                Query::equal('providerInstallationId', [$providerInstallationId]),
+                Query::equal('projectInternalId', [$projectInternalId]),
+                Query::equal('provider', ['bitbucket'])
+            ]);
+
+            if ($installation->isEmpty()) {
+                $teamId = $project->getAttribute('teamId', '');
+
+                $installation = new Document([
+                    '$id' => ID::unique(),
+                    '$permissions' => [
+                        Permission::read(Role::team(ID::custom($teamId))),
+                        Permission::update(Role::team(ID::custom($teamId), 'owner')),
+                        Permission::update(Role::team(ID::custom($teamId), 'developer')),
+                        Permission::delete(Role::team(ID::custom($teamId), 'owner')),
+                        Permission::delete(Role::team(ID::custom($teamId), 'developer')),
+                    ],
+                    'providerInstallationId' => $providerInstallationId,
+                    'projectId' => $projectId,
+                    'projectInternalId' => $projectInternalId,
+                    'provider' => 'bitbucket',
+                    'organization' => $owner,
+                    'personal' => true,
+                    'personalRefreshToken' => $refreshToken,
+                    'personalAccessToken' => $accessToken,
+                    'personalAccessTokenExpiry' => $accessTokenExpiry,
+                ]);
+
+                $installation = $dbForPlatform->createDocument('installations', $installation);
+            } else {
+                $installation = $installation
+                    ->setAttribute('organization', $owner)
+                    ->setAttribute('personalRefreshToken', $refreshToken)
+                    ->setAttribute('personalAccessToken', $accessToken)
+                    ->setAttribute('personalAccessTokenExpiry', $accessTokenExpiry);
+                $installation = $dbForPlatform->updateDocument('installations', $installation->getId(), $installation);
+            }
+        }
+
+        $response
+            ->addHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->addHeader('Pragma', 'no-cache')
+            ->redirect($redirectSuccess);
+    });
+
 App::get('/v1/vcs/github/installations/:installationId/providerRepositories/:providerRepositoryId/contents')
     ->desc('Get files and directories of a VCS repository')
     ->groups(['api', 'vcs'])
@@ -762,6 +1062,138 @@ App::get('/v1/vcs/github/installations/:installationId/providerRepositories/:pro
         foreach ($contents as $content) {
             $isDirectory = false;
             if ($content['type'] === GitHub::CONTENTS_DIRECTORY) {
+                $isDirectory = true;
+            }
+
+            $vcsContents[] = new Document([
+                'isDirectory' => $isDirectory,
+                'name' => $content['name'] ?? '',
+                'size' => $content['size'] ?? 0
+            ]);
+        }
+
+        $response->dynamic(new Document([
+            'contents' => $vcsContents
+        ]), Response::MODEL_VCS_CONTENT_LIST);
+    });
+
+App::get('/v1/vcs/gitlab/installations/:installationId/providerRepositories/:providerRepositoryId/contents')
+    ->desc('Get files and directories of a VCS repository')
+    ->groups(['api', 'vcs'])
+    ->label('scope', 'vcs.read')
+    ->label('sdk', new Method(
+        namespace: 'vcs',
+        group: 'repositories',
+        name: 'getGitLabRepositoryContents',
+        description: '/docs/references/vcs/get-gitlab-repository-contents.md',
+        auth: [AuthType::ADMIN],
+        responses: [
+            new SDKResponse(
+                code: Response::STATUS_CODE_OK,
+                model: Response::MODEL_VCS_CONTENT_LIST,
+            )
+        ]
+    ))
+    ->param('installationId', '', new Text(256), 'Installation Id')
+    ->param('providerRepositoryId', '', new Text(256), 'Repository Id')
+    ->param('providerRootDirectory', '', new Text(256, 0), 'Path to get contents of nested directory', true)
+    ->param('providerReference', '', new Text(256, 0), 'Git reference (branch, tag, commit) to get contents from', true)
+    ->inject('gitLab')
+    ->inject('response')
+    ->inject('project')
+    ->inject('dbForPlatform')
+    ->action(function (string $installationId, string $providerRepositoryId, string $providerRootDirectory, string $providerReference, GitLab $gitlab, Response $response, Document $project, Database $dbForPlatform) {
+        $installation = $dbForPlatform->getDocument('installations', $installationId);
+
+        if ($installation->isEmpty()) {
+            throw new Exception(Exception::INSTALLATION_NOT_FOUND);
+        }
+
+        $accessToken = $installation->getAttribute('personalAccessToken');
+        $gitlab->setAccessToken($accessToken);
+
+        $owner = $installation->getAttribute('organization');
+        try {
+            $repositoryName = $gitlab->getRepositoryName($providerRepositoryId) ?? '';
+            if (empty($repositoryName)) {
+                throw new Exception(Exception::PROVIDER_REPOSITORY_NOT_FOUND);
+            }
+        } catch (RepositoryNotFound $e) {
+            throw new Exception(Exception::PROVIDER_REPOSITORY_NOT_FOUND);
+        }
+
+        $contents = $gitlab->listRepositoryContents($owner, $repositoryName, $providerRootDirectory, $providerReference);
+
+        $vcsContents = [];
+        foreach ($contents as $content) {
+            $isDirectory = false;
+            if ($content['type'] === 'tree') {
+                $isDirectory = true;
+            }
+
+            $vcsContents[] = new Document([
+                'isDirectory' => $isDirectory,
+                'name' => $content['name'] ?? '',
+                'size' => $content['size'] ?? 0
+            ]);
+        }
+
+        $response->dynamic(new Document([
+            'contents' => $vcsContents
+        ]), Response::MODEL_VCS_CONTENT_LIST);
+    });
+
+App::get('/v1/vcs/bitbucket/installations/:installationId/providerRepositories/:providerRepositoryId/contents')
+    ->desc('Get files and directories of a VCS repository')
+    ->groups(['api', 'vcs'])
+    ->label('scope', 'vcs.read')
+    ->label('sdk', new Method(
+        namespace: 'vcs',
+        group: 'repositories',
+        name: 'getBitbucketRepositoryContents',
+        description: '/docs/references/vcs/get-bitbucket-repository-contents.md',
+        auth: [AuthType::ADMIN],
+        responses: [
+            new SDKResponse(
+                code: Response::STATUS_CODE_OK,
+                model: Response::MODEL_VCS_CONTENT_LIST,
+            )
+        ]
+    ))
+    ->param('installationId', '', new Text(256), 'Installation Id')
+    ->param('providerRepositoryId', '', new Text(256), 'Repository Id')
+    ->param('providerRootDirectory', '', new Text(256, 0), 'Path to get contents of nested directory', true)
+    ->param('providerReference', '', new Text(256, 0), 'Git reference (branch, tag, commit) to get contents from', true)
+    ->inject('bitbucket')
+    ->inject('response')
+    ->inject('project')
+    ->inject('dbForPlatform')
+    ->action(function (string $installationId, string $providerRepositoryId, string $providerRootDirectory, string $providerReference, Bitbucket $bitbucket, Response $response, Document $project, Database $dbForPlatform) {
+        $installation = $dbForPlatform->getDocument('installations', $installationId);
+
+        if ($installation->isEmpty()) {
+            throw new Exception(Exception::INSTALLATION_NOT_FOUND);
+        }
+
+        $accessToken = $installation->getAttribute('personalAccessToken');
+        $bitbucket->setAccessToken($accessToken);
+
+        $owner = $installation->getAttribute('organization');
+        try {
+            $repositoryName = $bitbucket->getRepositoryName($providerRepositoryId) ?? '';
+            if (empty($repositoryName)) {
+                throw new Exception(Exception::PROVIDER_REPOSITORY_NOT_FOUND);
+            }
+        } catch (RepositoryNotFound $e) {
+            throw new Exception(Exception::PROVIDER_REPOSITORY_NOT_FOUND);
+        }
+
+        $contents = $bitbucket->listRepositoryContents($owner, $repositoryName, $providerRootDirectory, $providerReference);
+
+        $vcsContents = [];
+        foreach ($contents as $content) {
+            $isDirectory = false;
+            if ($content['type'] === 'directory') {
                 $isDirectory = true;
             }
 

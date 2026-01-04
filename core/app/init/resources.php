@@ -68,6 +68,8 @@ use Utopia\Telemetry\Adapter\None as NoTelemetry;
 use Utopia\Validator\URL;
 use Utopia\Validator\WhiteList;
 use Utopia\VCS\Adapter\Git\GitHub as VcsGitHub;
+use Utopia\VCS\Adapter\Git\GitLab as VcsGitLab;
+use Utopia\VCS\Adapter\Git\Bitbucket as VcsBitbucket;
 
 // Runtime Execution
 App::setResource('log', fn () => new Log());
@@ -925,6 +927,14 @@ App::setResource('schema', function ($utopia, $dbForProject, $authorization) {
 
 App::setResource('gitHub', function (Cache $cache) {
     return new VcsGitHub($cache);
+}, ['cache']);
+
+App::setResource('gitLab', function (Cache $cache) {
+    return new VcsGitLab($cache);
+}, ['cache']);
+
+App::setResource('bitbucket', function (Cache $cache) {
+    return new VcsBitbucket($cache);
 }, ['cache']);
 
 App::setResource('requestTimestamp', function ($request) {

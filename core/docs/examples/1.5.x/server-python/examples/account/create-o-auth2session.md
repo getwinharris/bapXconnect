@@ -1,0 +1,15 @@
+from bapxdb.client import Client
+from bapxdb.enums import OAuthProvider
+
+client = Client()
+client.set_endpoint('https://<REGION>.cloud.bapxdb.io/v1') # Your API Endpoint
+client.set_project('5df5acd0d48c2') # Your project ID
+
+account = Account(client)
+
+result = account.create_o_auth2_session(
+    provider = OAuthProvider.AMAZON,
+    success = 'https://example.com', # optional
+    failure = 'https://example.com', # optional
+    scopes = [] # optional
+)

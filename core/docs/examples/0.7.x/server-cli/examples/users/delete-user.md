@@ -1,0 +1,1 @@
+bapxdb users deleteUser --userId="[USER_ID]" 

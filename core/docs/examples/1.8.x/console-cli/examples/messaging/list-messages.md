@@ -1,0 +1,1 @@
+bapxdb messaging list-messages

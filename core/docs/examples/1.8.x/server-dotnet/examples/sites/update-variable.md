@@ -1,0 +1,18 @@
+using bapXdb;
+using bapXdb.Models;
+using bapXdb.Services;
+
+Client client = new Client()
+    .SetEndPoint("https://<REGION>.cloud.bapxdb.io/v1") // Your API Endpoint
+    .SetProject("<YOUR_PROJECT_ID>") // Your project ID
+    .SetKey("<YOUR_API_KEY>"); // Your secret API key
+
+Sites sites = new Sites(client);
+
+Variable result = await sites.UpdateVariable(
+    siteId: "<SITE_ID>",
+    variableId: "<VARIABLE_ID>",
+    key: "<KEY>",
+    value: "<VALUE>", // optional
+    secret: false // optional
+);

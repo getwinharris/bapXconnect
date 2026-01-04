@@ -1,0 +1,1 @@
+bapxdb avatars get-initials

@@ -1,0 +1,15 @@
+import io.bapxdb.Client
+import io.bapxdb.coroutines.CoroutineCallback
+import io.bapxdb.services.Functions
+
+val client = Client(context)
+    .setEndpoint("https://cloud.bapxdb.io/v1") // Your API Endpoint
+    .setProject("<YOUR_PROJECT_ID>") // Your project ID
+
+val functions = Functions(client)
+
+val result = functions.listExecutions(
+    functionId = "<FUNCTION_ID>", 
+    queries = listOf(), // (optional)
+    search = "<SEARCH>", // (optional)
+)

@@ -1,0 +1,1 @@
+Check the bapXdb queue messaging servers are up and connection is successful.

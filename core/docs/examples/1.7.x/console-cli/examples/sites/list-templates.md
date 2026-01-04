@@ -1,0 +1,5 @@
+bapxdb sites listTemplates \
+
+
+
+

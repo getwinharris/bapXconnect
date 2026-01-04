@@ -1,0 +1,1 @@
+bapxdb teams list

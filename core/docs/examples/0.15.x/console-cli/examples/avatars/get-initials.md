@@ -1,0 +1,6 @@
+bapxdb avatars getInitials \
+
+
+
+
+

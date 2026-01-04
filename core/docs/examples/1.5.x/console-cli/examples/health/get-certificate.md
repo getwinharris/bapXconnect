@@ -1,0 +1,2 @@
+bapxdb health getCertificate \
+

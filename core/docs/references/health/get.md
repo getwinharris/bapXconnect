@@ -1,0 +1,1 @@
+Check the bapXdb HTTP server is up and responsive.

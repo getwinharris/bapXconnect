@@ -1,0 +1,35 @@
+[package]
+name = "trailbase-sqlite"
+version = "0.3.0"
+edition = "2024"
+license = "OSL-3.0"
+description = "Async SQLite connection for TrailBase"
+homepage = "https://trailbase.io"
+repository = "https://github.com/trailbaseio/trailbase"
+readme = "../README.md"
+autobenches = false
+
+[[bench]]
+name = "benchmark"
+path = "benches/benchmark.rs"
+harness = false
+
+[dependencies]
+kanal = "0.1.1"
+log = { version = "^0.4.21", default-features = false }
+parking_lot = { workspace = true }
+rusqlite = { workspace = true }
+serde = { workspace = true }
+serde_rusqlite = "0.40"
+thiserror = "2.0.12"
+tokio = { workspace = true }
+
+[dev-dependencies]
+criterion = { version = "0.8", features = ["html_reports", "async_tokio"] }
+env_logger = { workspace = true }
+futures-util = { version = "0.3", default-features = false, features = ["alloc"] }
+log = "0.4.27"
+rand = { workspace = true }
+tempfile = "3.19.1"
+trailbase-extension = { workspace = true }
+uuid = { workspace = true }

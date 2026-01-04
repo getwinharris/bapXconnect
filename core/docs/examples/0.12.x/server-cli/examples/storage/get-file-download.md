@@ -1,0 +1,2 @@
+bapxdb storage getFileDownload \
+        --fileId="[FILE_ID]"

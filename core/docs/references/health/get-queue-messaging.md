@@ -1,0 +1,1 @@
+Get the number of messages that are waiting to be processed in the bapXdb internal queue server.

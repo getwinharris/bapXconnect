@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation | bapX - Cloud-Native Infrastructure</title>
+    <meta name="description" content="Comprehensive guides and API references for building sovereign cloud-native apps with bapX.">
+    <link rel="icon" type="image/png" href="../logo/bapXfavicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .docs-layout { display: flex; min-height: calc(100vh - 73px); }
+        .docs-sidebar { width: 280px; border-right: 1px solid var(--border-muted); padding: 2rem; position: sticky; top: 73px; height: calc(100vh - 73px); overflow-y: auto; }
+        .docs-content { flex: 1; padding: 3rem 4rem; max-width: 900px; }
+        .docs-nav-group { margin-bottom: 2rem; }
+        .docs-nav-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: white; margin-bottom: 1rem; }
+        .docs-nav-item { display: block; padding: 0.4rem 0; color: var(--text-dim); font-size: 0.95rem; }
+        .docs-nav-item:hover, .docs-nav-item.active { color: var(--accent-purple); }
+        h1 { font-size: 3rem; margin-bottom: 1.5rem; }
+        h2 { font-size: 1.75rem; margin-top: 3rem; margin-bottom: 1rem; }
+        p { margin-bottom: 1.5rem; color: #ccc; }
+        code { background: #1a1a1a; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; color: var(--accent-purple); }
+        pre { background: #0a0a0a; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-muted); margin: 1.5rem 0; overflow-x: auto; }
+    </style>
+    <link rel="shortcut icon" href="../logo/bapXfavicon.png" type="image/x-icon">
+</head>
+<body class="antialiased">
+    <div class="mesh-glow"></div>
+
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo-link">
+                <img src="../logo/bapXmain.png" alt="bapX Logo" class="logo-img">
+            </a>
+            <ul class="nav-links">
+                <li><a href="docs.html" class="active">Docs</a></li>
+                <li><a href="http://localhost:3000" style="color: var(--accent-purple); font-weight: 700;"><i class="fas fa-robot" style="margin-right: 6px;"></i>AI Hub</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="community.html">Community</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="login.html" class="btn btn-secondary">Sign In</a></li>
+                <li><a href="login.html" class="btn btn-primary">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="docs-layout" style="display: grid; grid-template-columns: 280px 1fr; gap: 4rem; margin-top: 2rem;">
+            <aside class="docs-sidebar">
+                <div class="docs-nav-group">
+                    <div class="docs-nav-title">Getting Started</div>
+                    <a href="#" class="docs-nav-item active">Introduction</a>
+                    <a href="#" class="docs-nav-item">Quick Start</a>
+                    <a href="changelog.html" class="docs-nav-item">Changelog</a>
+                </div>
+                <div class="docs-nav-group">
+                    <div class="docs-nav-title">Sovereign Intelligence</div>
+                    <a href="#ai-hub" class="docs-nav-item">AI Hub (ai.bapx.in)</a>
+                    <a href="#model-engine" class="docs-nav-item">Model Engine</a>
+                    <a href="#memory-context" class="docs-nav-item">Lifetime Memory</a>
+                </div>
+                <div class="docs-nav-group">
+                    <div class="docs-nav-title">Sovereign Core</div>
+                    <a href="#identity-mapping" class="docs-nav-item">Identity Mapping</a>
+                    <a href="#storage-compute" class="docs-nav-item">Storage as Compute</a>
+                    <a href="#wasm-edge" class="docs-nav-item">WASM Edge Functions</a>
+                    <a href="#studio-orchestration" class="docs-nav-item">Studio Orchestration</a>
+                    <a href="#deployment" class="docs-nav-item">Global Deployment</a>
+                    <a href="#domains" class="docs-nav-item">Domain Strategy</a>
+                </div>
+                <div class="docs-nav-group">
+                    <div class="docs-nav-title">Integration</div>
+                    <a href="#" class="docs-nav-item">React & Next.js</a>
+                    <a href="#" class="docs-nav-item">Vue & Nuxt</a>
+                    <a href="#" class="docs-nav-item">Flutter & Mobile</a>
+                    <a href="#" class="docs-nav-item">Server-Side Rust</a>
+                </div>
+            </aside>
+
+            <main class="docs-content" style="padding-bottom: 8rem;">
+                <h1 style="font-size: 3.5rem; margin-bottom: 1.5rem;" class="gradient-text">Documentation</h1>
+                <p style="font-size: 1.25rem; color: var(--text-dim); margin-bottom: 3rem;">Learn how to build, deploy, and scale your applications on bapX Media Hub, the platform where Storage is Compute.</p>
+
+                <div class="card" style="margin-bottom: 4rem; border-left: 4px solid var(--accent-purple);">
+                    <h3 style="margin-bottom: 0.5rem;">Deployment Workflow</h3>
+                    <p style="color: var(--text-dim); margin-bottom: 1.5rem;">Deploying to bapX is designed to be invisible. Our GitHub-native workflow handles everything from provisioning to global edge distribution.</p>
+                    <ol style="color: var(--text-dim); padding-left: 1.25rem; margin-bottom: 1.5rem;">
+                        <li style="margin-bottom: 0.5rem;">Connect your GitHub repository in the bapX Console.</li>
+                        <li style="margin-bottom: 0.5rem;">Configure your <code>bapx.json</code> manifest file.</li>
+                        <li style="margin-bottom: 0.5rem;">Push to <code>main</code>. Your project is live at <code>bapx.[name].in</code> in seconds.</li>
+                    </ol>
+                    <pre style="background: #050505; border: 1px solid var(--border-muted); padding: 1rem; border-radius: 8px; font-family: 'Geist Mono', monospace; font-size: 0.875rem; color: #fff;"><code>// bapx.json
+{
+  "name": "my-awesome-app",
+  "framework": "nextjs",
+  "storage": { "hub": "primary", "region": "us-east" },
+  "compute": { "runtime": "wasm-edge" }
+}</code></pre>
+                </div>
+
+                <h2 id="ai-hub" style="font-size: 2rem; margin-top: 4rem; margin-bottom: 1.5rem;">Sovereign Intelligence (AI Hub)</h2>
+                <p style="color: var(--text-dim);">The bapX AI Hub (<code>ai.bapx.in</code>) is a reasoning and search engine powered by Open WebUI and serving local models via <code>llama.cpp</code>. It is directly wired to your central bapX database for unified authentication and storage.</p>
+                
+                <div class="card" style="margin-top: 1.5rem; border-left: 4px solid var(--accent-purple);">
+                    <h4 style="margin-bottom: 1rem;">Core AI Capabilities:</h4>
+                    <ul class="feature-list" style="color: var(--text-dim);">
+                        <li><strong>Web Search Loop:</strong> Integrated search providers (SearXNG, Google) for real-time data retrieval.</li>
+                        <li><strong>Reasoning Loop:</strong> Powered by Qwen2.5-Coder-7B for logical, step-by-step problem solving.</li>
+                        <li><strong>Lifetime Memory (RAG):</strong> Direct Postgres integration to query your user's specific lifetime data stored in bapXdb.</li>
+                    </ul>
+                </div>
+
+                <h3 id="model-engine" style="margin-top: 2rem; margin-bottom: 1rem;">The Model Engine</h3>
+                <p style="color: var(--text-dim);">We leverage <code>llama.cpp</code> to serve models locally on your infrastructure, ensuring data sovereignty. The default reasoning model is <code>Qwen2.5-Coder-7B-Q8_0</code>.</p>
+                <pre style="background: #050505; border: 1px solid var(--border-muted); padding: 1rem; border-radius: 8px; font-family: 'Geist Mono', monospace; font-size: 0.875rem; color: #fff;"><code># Serve the model via bapX-CLI
+./ai/bin/bapx-cli start</code></pre>
+
+                <h2 id="storage-compute" style="font-size: 2rem; margin-top: 4rem; margin-bottom: 1.5rem;">Storage as Compute (Deep Dive)</h2>
+                <p style="color: var(--text-dim);">Traditional architectures separate data (Databases) from execution (Serverless/VPS). This introduces "data gravity" issues and latency. bapX eliminates this gap by allowing code to execute directly within the storage engine.</p>
+                <div class="card" style="margin-top: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem;">Key Technical Advantages:</h4>
+                    <ul class="feature-list">
+                        <li><strong>Zero Data Transit:</strong> Data never leaves the secure memory space of the storage hub during processing.</li>
+                        <li><strong>Byte-Perfect Precision:</strong> Identities are mapped directly to data fragments, ensuring sovereign security.</li>
+                        <li><strong>Linear Scalability:</strong> As you add storage capacity, your compute power scales proportionally.</li>
+                    </ul>
+                </div>
+                <pre style="background: #050505; border: 1px solid var(--border-muted); padding: 1.5rem; border-radius: 12px; font-family: 'Geist Mono', monospace; font-size: 0.875rem; color: #fff; overflow-x: auto; margin-top: 1.5rem;"><code>// Native Rust function running on Storage Hub
+#[bapx_compute]
+pub fn process_order(order: Order) -> Result<OrderResult> {
+    let inventory = storage::get_ref("inventory");
+    if inventory.check(&order) {
+        order.mark_processed();
+        return Ok(OrderResult::Success);
+    }
+    Err(OrderError::OutOfStock)
+}</code></pre>
+
+                <h2 id="wasm-edge" style="font-size: 2rem; margin-top: 4rem; margin-bottom: 1.5rem;">WASM Edge Functions</h2>
+                <p style="color: var(--text-dim);">bapX leverages high-performance WebAssembly runtimes for all edge logic. This provides the safety of a sandbox with the performance of native code.</p>
+                <div class="card" style="margin-top: 1.5rem; border-left: 4px solid var(--accent-purple);">
+                    <h4 style="margin-bottom: 1rem;">Supported Languages:</h4>
+                    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                        <div style="text-align: center;"><i class="fab fa-rust" style="font-size: 2rem; color: #DEA584;"></i><p style="font-size: 0.75rem; margin-top: 0.5rem;">Rust</p></div>
+                        <div style="text-align: center;"><i class="fab fa-js" style="font-size: 2rem; color: #F7DF1E;"></i><p style="font-size: 0.75rem; margin-top: 0.5rem;">JavaScript</p></div>
+                        <div style="text-align: center;"><i class="fab fa-golang" style="font-size: 2rem; color: #00ADD8;"></i><p style="font-size: 0.75rem; margin-top: 0.5rem;">Go</p></div>
+                        <div style="text-align: center;"><i class="fas fa-code" style="font-size: 2rem; color: #fff;"></i><p style="font-size: 0.75rem; margin-top: 0.5rem;">Zig</p></div>
+                    </div>
+                </div>
+
+                <h2 id="domains" style="font-size: 2rem; margin-top: 4rem; margin-bottom: 1.5rem;">Domain Strategy</h2>
+                <p style="color: var(--text-dim);">bapX Media Hub provides a professional domain ecosystem for your products and administration. We handle the DNS orchestration so you can focus on building.</p>
+                <div class="card" style="margin-top: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem;">Administrative Services (Prefix)</h4>
+                    <ul class="feature-list">
+                        <li><code>ai.bapx.in</code> - AGI Search Engine with lifetime context.</li>
+                        <li><code>mate.bapx.in</code> - Automation Studio & Wired IDE.</li>
+                    </ul>
+                    <h4 style="margin-top: 2rem; margin-bottom: 1rem;">User Projects (Suffix)</h4>
+                    <ul class="feature-list">
+                        <li>Every project is assigned a high-authority suffix: <code>bapx.[project-name].in</code></li>
+                        <li><strong>Pilot & Sovereign:</strong> Connect your custom domain with zero-config SSL and DNS propagation.</li>
+                    </ul>
+                </div>
+
+                <h2 id="model-orchestration" style="font-size: 2rem; margin-top: 4rem; margin-bottom: 1.5rem;">Sovereign Intelligence (ai.bapx.in)</h2>
+                <p style="color: var(--text-dim);">bapX provides a unified intelligence layer powered by <strong>Open WebUI</strong> and <strong>llama.cpp</strong>. This environment is isolated at <code>ai.bapx.in</code> but remains wired to your <code>bapx.in</code> project database for storage and memory.</p>
+                
+                <div class="card" style="margin-top: 1.5rem; border-left: 4px solid var(--accent-purple);">
+                    <h4 style="margin-bottom: 1rem;">Model Orchestration</h4>
+                    <p style="font-size: 0.875rem; color: var(--text-dim);">We leverage high-performance models for code generation and database orchestration. Models are served via llama.cpp for maximum efficiency on sovereign hardware.</p>
+                </div>
+
+                <div class="card" style="margin-top: 2rem; background: rgba(168, 85, 247, 0.03); border: 1px solid rgba(168, 85, 247, 0.2);">
+                    <h4 style="margin-bottom: 1rem; color: #fff;">Unified Authentication & Storage</h4>
+                    <p style="font-size: 0.875rem; color: var(--text-dim);">Even when signing up at <code>ai.bapx.in</code>, your identity is managed by the core <code>bapx.in</code> database. This ensures a single username, shared API keys, and seamless storage access across all products.</p>
+                </div>
+
+                <h2 id="api-integration" style="font-size: 2rem; margin-top: 4rem; margin-bottom: 1.5rem;">API & Project Integration</h2>
+                <p style="color: var(--text-dim);">Connect your <code>bapx.[project].in</code> projects to the intelligence layer using the Unified API Keys found in your settings.</p>
+
+                <h2 id="deployment" style="font-size: 2rem; margin-top: 4rem; margin-bottom: 1.5rem;">Global Deployment</h2>
+                <p style="color: var(--text-dim);">bapX is a managed cloud platform. We do not provide self-hosting options to ensure maximum performance, byte-perfect precision, and security.</p>
+                <div class="card" style="margin-top: 1.5rem;">
+                    <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem;">
+                        <i class="fab fa-github" style="font-size: 1.5rem;"></i>
+                        <span style="font-weight: 600;">GitHub Integration</span>
+                    </div>
+                    <p style="font-size: 0.875rem; color: var(--text-dim); margin-bottom: 0;">Connect your repository and deploy to <code>bapx.[name].in</code> automatically on every push. Our global edge network ensures your app is live in under 30 seconds.</p>
+                </div>
+
+                <h2 id="comparisons" style="font-size: 2rem; margin-top: 4rem; margin-bottom: 1.5rem;">bapX vs. The Industry</h2>
+                <p style="color: var(--text-dim);">Why choose bapX over traditional backend-as-a-service providers?</p>
+                <div class="card-grid" style="margin-top: 2rem;">
+                    <div class="card">
+                        <h3>Domain Migration</h3>
+                        <p style="color: var(--text-dim); margin-bottom: 1rem;">Point your A records to <code>104.21.78.142</code> to transfer your Hostinger domains completely to bapX. We handle SSL, DNS, and edge propagation.</p>
+                        <a href="admin.html" class="btn btn-secondary btn-sm">Start Migration</a>
+                    </div>
+                    <div class="card">
+                        <h3>Loyalty Program</h3>
+                        <p style="color: var(--text-dim); margin-bottom: 1rem;">Host your project with us for 6 months and your domain DNS becomes <strong>Free Forever</strong>. We never sell your data or release your domain even if you close your subscription.</p>
+                        <span style="color: var(--accent-purple); font-weight: 700;">Zero Maintenance Fees</span>
+                    </div>
+                </div>
+
+                <h2 id="platform-comparison" style="font-size: 2rem; margin-top: 4rem; margin-bottom: 1.5rem;">Platform Capabilities</h2>
+                <p style="color: var(--text-dim);">bapX is designed for modern, multi-platform development. Unlike competitors restricted to specific SDKs, bapX provides native support for any environment that speaks HTTP or WASM.</p>
+                
+                <div class="card-grid" style="margin-top: 2rem;">
+                    <div class="card">
+                        <i class="fab fa-android" style="font-size: 1.5rem; color: var(--accent-purple); margin-bottom: 1rem;"></i>
+                        <h4>Android & iOS</h4>
+                        <p style="font-size: 0.875rem; color: var(--text-dim);">Native SDKs with real-time sync and offline-first identity mapping. Performance that beats Firebase Firestore.</p>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-globe" style="font-size: 1.5rem; color: var(--accent-purple); margin-bottom: 1rem;"></i>
+                        <h4>Web & Desktop</h4>
+                        <p style="font-size: 0.875rem; color: var(--text-dim);">Zero-bundle-size API calls. Support for Next.js, React, Vue, and Electron with instant edge deployment.</p>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-microchip" style="font-size: 1.5rem; color: var(--accent-purple); margin-bottom: 1rem;"></i>
+                        <h4>IoT & Edge</h4>
+                        <p style="font-size: 0.875rem; color: var(--text-dim);">Run WASM logic directly on the storage hub. Perfect for low-power devices and high-speed processing.</p>
+                    </div>
+                </div>
+
+                <h2 id="feature-audit" style="font-size: 2rem; margin-top: 4rem; margin-bottom: 1.5rem;">Advanced Features</h2>
+                <p style="color: var(--text-dim);">bapX includes all the features you expect from a world-class BaaS, plus our unique "Storage as Compute" advantages.</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                    <ul class="feature-list">
+                        <li><strong>Databases:</strong> NoSQL with SQL-like query power and native identity mapping.</li>
+                        <li><strong>Functions:</strong> WASM-based edge compute with support for Rust, JS, Go, and Zig.</li>
+                        <li><strong>Auth:</strong> Global identity mapping with OAuth, Magic Links, and biometric support.</li>
+                    </ul>
+                    <ul class="feature-list">
+                        <li><strong>Storage:</strong> Multi-region object storage with built-in image transformation and CDN.</li>
+                        <li><strong>Messaging:</strong> Native SMS, Email, and Push notifications (Omni-Messaging).</li>
+                        <li><strong>Infrastructure:</strong> Automatic SSL, DNS orchestration, and CI/CD via GitHub.</li>
+                    </ul>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<?php
+
+namespace bapXdb\SDK\Specification;
+
+class Specification
+{
+    protected Format $format;
+
+    public function __construct(Format $format)
+    {
+        $this->format = $format;
+    }
+
+    /**
+     * Get Name.
+     *
+     * Get format name
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->format->getName();
+    }
+
+    /**
+     * Parse
+     *
+     * Parses bapXdb App to given format
+     *
+     * @return array
+     */
+    public function parse(): array
+    {
+        return $this->format->parse();
+    }
+}

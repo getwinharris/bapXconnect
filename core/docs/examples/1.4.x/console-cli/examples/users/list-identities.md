@@ -1,0 +1,3 @@
+bapxdb users listIdentities \
+
+

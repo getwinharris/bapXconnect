@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "@bapxdb.io/repo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bapxdb/bapxdb.git"
+  },
+  "files": [
+    "docs/examples",
+    "app/config/specs"
+  ]
+}

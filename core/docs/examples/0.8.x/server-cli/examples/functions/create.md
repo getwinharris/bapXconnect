@@ -1,0 +1,1 @@
+bapxdb functions create --name="[NAME]" --execute="" --env="dotnet-3.1" --vars="{}" --events="" --schedule="" --timeout="1" 

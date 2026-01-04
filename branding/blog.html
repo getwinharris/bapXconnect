@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | bapX - Cloud-Native Insights</title>
+    <meta name="description" content="Stay updated with the latest news, tutorials, and engineering insights from the bapX team. Focused on cloud-native sovereign infrastructure.">
+    <link rel="icon" type="image/png" href="../logo/bapXfavicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="../logo/bapXfavicon.png" type="image/x-icon">
+    <style>
+        .blog-post { margin-bottom: 4rem; }
+        .blog-meta { font-size: 0.875rem; color: var(--text-dim); margin-bottom: 1rem; }
+        .blog-title { font-size: 2.5rem; margin-bottom: 1rem; color: white; }
+        .blog-excerpt { color: var(--text-dim); font-size: 1.125rem; margin-bottom: 1.5rem; }
+        .read-more { color: var(--accent-purple); font-weight: bold; }
+        .blog-sidebar { border-left: 1px solid var(--border-muted); padding-left: 2rem; }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="mesh-glow"></div>
+
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo-link">
+                <img src="../logo/bapXmain.png" alt="bapX Logo" class="logo-img">
+            </a>
+            <ul class="nav-links">
+                <li><a href="docs.html">Docs</a></li>
+                <li><a href="blog.html" class="active">Blog</a></li>
+                <li><a href="community.html">Community</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="login.html" class="btn btn-secondary">Sign In</a></li>
+                <li><a href="login.html" class="btn btn-primary">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <div class="badge">Technical Insights</div>
+            <h1 class="gradient-text">The bapX Journal</h1>
+            <p class="subtitle">Engineering depth, product vision, and the future of sovereign infrastructure.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 4rem; margin-top: 4rem;">
+            <div class="blog-feed">
+                <article class="card" style="margin-bottom: 3rem; overflow: hidden; padding: 0;">
+                    <div style="width: 100%; height: 240px; background: linear-gradient(135deg, #1a1a1a, #0a0a0a); display: flex; align-items: center; justify-content: center; position: relative;">
+                        <i class="fas fa-brain" style="font-size: 4rem; color: var(--accent-purple); opacity: 0.3;"></i>
+                        <div style="position: absolute; bottom: 1.5rem; left: 1.5rem; background: var(--accent-purple); color: #fff; padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">NEW RELEASE</div>
+                    </div>
+                    <div style="padding: 2.5rem;">
+                        <div style="font-size: 0.75rem; color: var(--accent-purple); font-weight: 700; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.1em;">January 3, 2026 • Product Update</div>
+                        <h2 style="font-size: 2.5rem; margin-bottom: 1rem;"><a href="#" class="hover:text-purple-400">Qwen2.5-Coder & llama.cpp: Elite Coding Performance for Sovereign AI</a></h2>
+                        <p style="color: var(--text-dim); margin-bottom: 1.5rem; line-height: 1.7; font-size: 1.125rem;">We are excited to announce the integration of Qwen2.5-Coder-7B-Q8_0 into the bapX Sovereign Intelligence layer. By leveraging llama.cpp orchestration, we've enabled sub-second token generation for complex coding tasks directly within your sovereign infrastructure. Learn how to wire this to ai.bapx.in and connect it to your database projects.</p>
+                        <a href="#" style="color: var(--accent-purple); font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem;">Read full update <i class="fas fa-arrow-right" style="font-size: 0.875rem;"></i></a>
+                    </div>
+                </article>
+
+                <article class="card" style="margin-bottom: 3rem; overflow: hidden; padding: 0;">
+
+                <article class="card" style="margin-bottom: 3rem; overflow: hidden; padding: 0;">
+                    <div style="width: 100%; height: 240px; background: linear-gradient(135deg, #0a0a0a, #1a1a1a); display: flex; align-items: center; justify-content: center; position: relative;">
+                        <i class="fas fa-unlock-alt" style="font-size: 4rem; color: var(--accent-purple); opacity: 0.3;"></i>
+                        <div style="position: absolute; bottom: 1.5rem; left: 1.5rem; background: var(--accent-purple); color: #fff; padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">VS FIREBASE</div>
+                    </div>
+                    <div style="padding: 2.5rem;">
+                        <div style="font-size: 0.75rem; color: var(--accent-purple); font-weight: 700; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.1em;">January 2, 2026 • Comparison</div>
+                        <h2 style="font-size: 2.5rem; margin-bottom: 1rem;"><a href="#" class="hover:text-purple-400">Firebase vs bapX: Breaking Free from Vendor Lock-in</a></h2>
+                        <p style="color: var(--text-dim); margin-bottom: 1.5rem; line-height: 1.7; font-size: 1.125rem;">Firebase users often face escalating costs and limited control over data localization. bapX's Sovereign Core allows developers to maintain byte-perfect precision over their data while leveraging the power of modern WASM-based edge compute. Discover why enterprise teams are migrating to bapX.</p>
+                        <a href="#" style="color: var(--accent-purple); font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem;">Read full article <i class="fas fa-arrow-right" style="font-size: 0.875rem;"></i></a>
+                    </div>
+                </article>
+
+                <article class="card" style="margin-bottom: 3rem; overflow: hidden; padding: 0;">
+                    <div style="width: 100%; height: 240px; background: linear-gradient(135deg, #1a1a1a, #0a0a0a); display: flex; align-items: center; justify-content: center; position: relative;">
+                        <i class="fas fa-fingerprint" style="font-size: 4rem; color: var(--accent-purple); opacity: 0.3;"></i>
+                        <div style="position: absolute; bottom: 1.5rem; left: 1.5rem; background: var(--accent-purple); color: #fff; padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">IDENTITY MAPPING</div>
+                    </div>
+                    <div style="padding: 2.5rem;">
+                        <div style="font-size: 0.75rem; color: var(--accent-purple); font-weight: 700; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.1em;">January 1, 2026 • Guide</div>
+                        <h2 style="font-size: 2.5rem; margin-bottom: 1rem;"><a href="#" class="hover:text-purple-400">Identity Mapping: The Next Evolution of Authentication</a></h2>
+                        <p style="color: var(--text-dim); margin-bottom: 1.5rem; line-height: 1.7; font-size: 1.125rem;">Move beyond simple sessions. bapX Identity Mapping creates a high-efficiency link between user identities and distributed data assets. This architectural shift ensures that your storage layers are fully compute-aware, enabling more complex RBAC and sub-millisecond data retrieval.</p>
+                        <a href="#" style="color: var(--accent-purple); font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem;">Read full guide <i class="fas fa-arrow-right" style="font-size: 0.875rem;"></i></a>
+                    </div>
+                </article>
+            </div>
+
+            <aside class="sidebar">
+                <div class="card" style="margin-bottom: 2rem; border-left: 4px solid var(--accent-purple);">
+                    <h4 style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem; color: var(--accent-purple);">AI Search Trending</h4>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 1rem;">
+                            <a href="#" style="color: white; font-size: 0.9375rem; font-weight: 600;" class="hover:text-purple-400">"bapX vs Supabase performance benchmarks 2026"</a>
+                            <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.25rem;">High Relevance for AI Orchestration</p>
+                        </li>
+                        <li style="margin-bottom: 1rem;">
+                            <a href="#" style="color: white; font-size: 0.9375rem; font-weight: 600;" class="hover:text-purple-400">"Cheapest BaaS for high traffic mobile apps"</a>
+                            <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.25rem;">Trending in Developer Queries</p>
+                        </li>
+                        <li style="margin-bottom: 1rem;">
+                            <a href="#" style="color: white; font-size: 0.9375rem; font-weight: 600;" class="hover:text-purple-400">"How Storage as Compute reduces latency"</a>
+                            <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.25rem;">Architectural Deep Dive</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card" style="margin-bottom: 2rem;">
+                    <h4 style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem;">Categories</h4>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: var(--text-dim); font-size: 0.9375rem;" class="hover:text-white">Core Engineering</a></li>
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: var(--text-dim); font-size: 0.9375rem;" class="hover:text-white">Product Updates</a></li>
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: var(--text-dim); font-size: 0.9375rem;" class="hover:text-white">Security & Sovereignty</a></li>
+                        <li style="margin-bottom: 0.75rem;"><a href="#" style="color: var(--text-dim); font-size: 0.9375rem;" class="hover:text-white">Community Spotlights</a></li>
+                    </ul>
+                </div>
+
+                <div class="card" style="background: linear-gradient(145deg, rgba(168, 85, 247, 0.1), transparent);">
+                    <h4 style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Newsletter</h4>
+                    <p style="color: var(--text-dim); font-size: 0.875rem; margin-bottom: 1.5rem;">Deep dives into backend architecture and sovereignty delivered to your inbox.</p>
+                    <input type="email" placeholder="you@company.com" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-muted); padding: 0.75rem; border-radius: 8px; color: white; margin-bottom: 1rem;">
+                    <button class="btn btn-purple" style="width: 100%; justify-content: center;">Subscribe</button>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <a href="index.html" class="logo-link">
+                        <img src="../logo/bapXmain.png" alt="bapX Logo" class="logo-img">
+                    </a>
+                    <p>The sovereign backend for modern web and mobile applications. Built for speed, security, and sovereignty.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="docs.html">Documentation</a></li>
+                        <li><a href="pricing.html">Pricing Plans</a></li>
+                        <li><a href="community.html">Community Hub</a></li>
+                        <li><a href="changelog.html">Changelog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About bapX</a></li>
+                        <li><a href="blog.html">Technical Blog</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Status</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 bapX. All rights reserved.</p>
+                <div style="display: flex; gap: 2rem;">
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

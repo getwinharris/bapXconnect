@@ -1,0 +1,15 @@
+require 'bapxdb'
+
+client = bapXdb::Client.new()
+
+client
+    .set_endpoint('https://[HOSTNAME_OR_IP]/v1') # Your API Endpoint
+    .set_project('5df5acd0d48c2') # Your project ID
+    .set_key('919c2d18fb5d4...a2ae413da83346ad2') # Your secret API key
+;
+
+database = bapXdb::Database.new(client);
+
+response = database.create_document(collection_id: '[COLLECTION_ID]', data: {}, read: [], write: []);
+
+puts response

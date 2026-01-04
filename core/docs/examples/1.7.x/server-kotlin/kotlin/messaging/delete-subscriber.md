@@ -1,0 +1,15 @@
+import io.bapxdb.Client
+import io.bapxdb.coroutines.CoroutineCallback
+import io.bapxdb.services.Messaging
+
+val client = Client()
+    .setEndpoint("https://<REGION>.cloud.bapxdb.io/v1") // Your API Endpoint
+    .setProject("<YOUR_PROJECT_ID>") // Your project ID
+    .setJWT("<YOUR_JWT>") // Your secret JSON Web Token
+
+val messaging = Messaging(client)
+
+val response = messaging.deleteSubscriber(
+    topicId = "<TOPIC_ID>",
+    subscriberId = "<SUBSCRIBER_ID>"
+)

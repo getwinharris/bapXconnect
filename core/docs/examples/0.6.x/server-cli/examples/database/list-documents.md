@@ -1,0 +1,1 @@
+bapxdb database listDocuments --collectionId="[COLLECTION_ID]" "--filters[]=" --offset="0" --limit="0" --orderField="[ORDER_FIELD]" --orderType="DESC" --orderCast="int" --search="[SEARCH]" 

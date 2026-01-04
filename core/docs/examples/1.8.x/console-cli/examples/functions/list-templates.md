@@ -1,0 +1,1 @@
+bapxdb functions list-templates

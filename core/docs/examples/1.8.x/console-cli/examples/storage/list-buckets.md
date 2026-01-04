@@ -1,0 +1,1 @@
+bapxdb storage list-buckets

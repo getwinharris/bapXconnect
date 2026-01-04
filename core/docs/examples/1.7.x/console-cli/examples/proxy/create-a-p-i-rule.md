@@ -1,0 +1,2 @@
+bapxdb proxy createAPIRule \
+        --domain ''

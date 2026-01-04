@@ -1,0 +1,1 @@
+Create new Documents. Before using this route, you should create a new collection resource using either a [server integration](https://bapxdb.io/docs/server/databases#databasesCreateCollection) API or directly from your database console.

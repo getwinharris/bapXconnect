@@ -1,0 +1,15 @@
+from bapxdb.client import Client
+from bapxdb.services.account import Account
+from bapxdb.enums import AuthenticatorType
+
+client = Client()
+client.set_endpoint('https://<REGION>.cloud.bapxdb.io/v1') # Your API Endpoint
+client.set_project('<YOUR_PROJECT_ID>') # Your project ID
+client.set_session('') # The user session to authenticate with
+
+account = Account(client)
+
+result = account.update_mfa_authenticator(
+    type = AuthenticatorType.TOTP,
+    otp = '<OTP>'
+)

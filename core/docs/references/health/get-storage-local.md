@@ -1,0 +1,1 @@
+Check the bapXdb local storage device is up and connection is successful.

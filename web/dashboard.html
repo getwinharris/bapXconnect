@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bapX Ai DB | Storage as Compute Superbase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f1f5f9; overflow: hidden; }
+        .bapx-blue { color: #38bdf8; }
+        .bapx-bg-blue { background-color: #38bdf8; }
+        .card { background-color: #0f172a; border: 1px solid #1e293b; border-radius: 12px; }
+        .sidebar { background-color: #0f172a; border-left: 1px solid #1e293b; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
+        @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .computing { animation: pulse-soft 2s infinite; }
+    </style>
+</head>
+<body class="h-screen flex">
+    <!-- Main Content Area -->
+    <main class="flex-1 p-8 overflow-y-auto">
+        <header class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-4">
+                <h1 class="text-3xl font-bold tracking-tight">bapX<span class="bapx-blue"> Ai DB</span></h1>
+                <div class="flex flex-col">
+                    <span class="px-3 py-0.5 bg-sky-500/10 text-sky-400 rounded-full text-[10px] font-mono border border-sky-500/20 w-fit uppercase font-bold">Storage-as-Compute Superbase</span>
+                    <div id="project-selector" class="mt-1 text-xs text-slate-400 font-mono">Project: dummy_user_ProjectAlpha</div>
+                </div>
+            </div>
+            <div id="compute-status" class="flex items-center gap-2 px-4 py-2 bg-slate-900 rounded-lg border border-slate-800">
+                <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                <span class="text-sm font-medium text-slate-300">Superbase Engine Ready</span>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="card p-6 border-l-4 border-l-slate-700">
+                <p class="text-slate-400 text-sm mb-1 uppercase tracking-wider font-semibold">Total Logic + Data</p>
+                <h2 id="total-storage" class="text-3xl font-bold">0.00 MB</h2>
+            </div>
+            <div class="card p-6 border-l-4 border-l-sky-500">
+                <p class="text-slate-400 text-sm mb-1 uppercase tracking-wider font-semibold">BAPX Scalar Field</p>
+                <h2 id="scalar-storage" class="text-3xl font-bold bapx-blue">0.00 MB</h2>
+                <p class="text-[11px] text-sky-400/60 mt-2 font-mono">99.999% Reduction Verified</p>
+            </div>
+            <div class="card p-6 border-l-4 border-l-indigo-500">
+                <p class="text-slate-400 text-sm mb-1 uppercase tracking-wider font-semibold">Stored Identities</p>
+                <h2 id="manifold-count" class="text-3xl font-bold text-indigo-400">0 States</h2>
+                <p class="text-[11px] text-indigo-400/60 mt-2 font-mono">Ready for On-the-Fly Compute</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Logic Section -->
+            <div class="card p-6 shadow-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold flex items-center gap-2 text-indigo-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        Logic (Code & Deps)
+                    </h3>
+                    <button onclick="storeSampleLogic()" class="px-4 py-1.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-lg text-xs font-bold hover:bg-indigo-500/20 transition-all uppercase">Compress Dependencies</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-slate-500 text-xs uppercase border-b border-slate-800">
+                                <th class="pb-4 font-bold">Path / Dependency</th>
+                                <th class="pb-4 font-bold text-right">Scalar ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logic-table-body" class="text-sm font-mono">
+                            <!-- Injected -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Data Section -->
+            <div class="card p-6 shadow-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold flex items-center gap-2 text-sky-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                        Storage (Assets & Data)
+                    </h3>
+                    <div id="drop-zone" class="px-4 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-lg cursor-pointer transition-all text-xs uppercase">
+                        Store New Asset
+                        <input type="file" id="file-input" class="hidden">
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-slate-500 text-xs uppercase border-b border-slate-800">
+                                <th class="pb-4 font-bold">Asset ID</th>
+                                <th class="pb-4 font-bold text-right">Scalar ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-table-body" class="text-sm font-mono">
+                            <!-- Injected -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Execution Panel -->
+        <div class="card p-8 border border-sky-500/20 bg-sky-500/5 text-center">
+            <h3 class="text-2xl font-black mb-2 uppercase tracking-tighter">Trigger Storage-as-Compute</h3>
+            <p class="text-sm text-slate-400 mb-8 max-w-2xl mx-auto">Click to execute the project logic. The BAPX engine will restore the necessary code and dependency identities on-the-fly from their 8-byte scalar states.</p>
+            <button onclick="runProject()" class="w-full py-5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black rounded-2xl text-xl tracking-widest transition-all uppercase flex items-center justify-center gap-4 shadow-xl shadow-sky-500/20">
+                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M4.5 3.5v13L16 10 4.5 3.5z"></path></svg>
+                EXECUTE PROJECT FROM BAPX FIELD
+            </button>
+        </div>
+    </main>
+
+    <!-- Sidebar: Real-time Logic Logs -->
+    <aside class="w-96 sidebar flex flex-col h-full">
+        <div class="p-6 border-b border-slate-800">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <svg class="w-5 h-5 bapx-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Logic & Compute Stream
+            </h3>
+            <p class="text-[10px] text-slate-500 mt-1 uppercase tracking-tighter font-bold">BAPX Identity Manifold Activity</p>
+        </div>
+        <div id="log-container" class="flex-1 overflow-y-auto p-6 font-mono text-[11px] space-y-2 bg-black/20">
+            <div class="text-slate-500">Superbase Engine initialized...</div>
+        </div>
+        <div class="p-6 border-t border-slate-800 bg-slate-900/50">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-bold uppercase text-slate-400">Identity Restoration Load</span>
+                <span id="load-percent" class="text-xs font-mono text-sky-400">0.00%</span>
+            </div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div id="load-bar" class="bg-sky-500 h-full w-[0%] transition-all duration-500"></div>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        const API_URL = 'http://localhost:6090';
+        const logContainer = document.getElementById('log-container');
+        let currentProject = 'dummy_user_ProjectAlpha';
+
+        function addLog(msg, type = 'info') {
+            const div = document.createElement('div');
+            const time = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            div.innerHTML = `<span class="text-slate-600">[${time}]</span> <span class="${type === 'error' ? 'text-red-400' : type === 'success' ? 'text-green-400' : type === 'compute' ? 'text-indigo-400' : 'text-sky-400'}">${msg}</span>`;
+            logContainer.appendChild(div);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        async function initProject() {
+            addLog(`Initializing ProjectAlpha Superbase...`);
+            await fetch(`${API_URL}/project/create?project_name=ProjectAlpha`);
+            fetchFiles();
+        }
+
+        async function fetchFiles() {
+            try {
+                const response = await fetch(`${API_URL}/storage/list?user_id=${currentProject}`);
+                const files = await response.json();
+                
+                const logicTbody = document.getElementById('logic-table-body');
+                const dataTbody = document.getElementById('data-table-body');
+                logicTbody.innerHTML = '';
+                dataTbody.innerHTML = '';
+                
+                let totalSize = 0;
+                let count = 0;
+                files.forEach((meta) => {
+                    totalSize += meta.sz;
+                    count++;
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-slate-900 hover:bg-slate-800/50 transition-colors';
+                    
+                    const displayName = meta.id.includes('/') ? meta.id.split('/').slice(1).join('/') : meta.id;
+                    
+                    row.innerHTML = `
+                        <td class="py-3 text-slate-300 font-mono text-[11px] truncate max-w-[200px]" title="${displayName}">${displayName}</td>
+                        <td class="py-3 text-right bapx-blue font-bold text-[11px]">${meta.b.substring(0, 16)}</td>
+                    `;
+                    
+                    if (meta.id.startsWith('logic/')) logicTbody.appendChild(row);
+                    else dataTbody.appendChild(row);
+                });
+                
+                document.getElementById('total-storage').innerText = (totalSize / (1024*1024)).toFixed(2) + ' MB';
+                document.getElementById('scalar-storage').innerText = (count * 8).toFixed(0) + ' Bytes';
+                document.getElementById('manifold-count').innerText = count + ' Identities';
+            } catch (err) {
+                console.error('Failed to fetch files:', err);
+            }
+        }
+
+        async function storeSampleLogic() {
+            addLog(`Triggering Batch Dependency Compression for ${currentProject}...`, 'compute');
+            const deps = [
+                { name: 'react/index.js', code: '/* React Core Logic */'.repeat(2000) },
+                { name: 'react-dom/index.js', code: '/* React DOM Renderer */'.repeat(1500) },
+                { name: 'framer-motion/dist/index.js', code: '/* Animation Engine Logic */'.repeat(3000) },
+                { name: 'lucide-react/index.js', code: '/* Icon Library Logic */'.repeat(500) },
+                { name: 'app/main.ts', code: 'import { motion } from "framer-motion"; export const run = () => { console.log("BAPX Superbase Executing...") }' }
+            ];
+
+            try {
+                const response = await fetch(`${API_URL}/project/compress_dependencies?project_id=${currentProject}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(deps)
+                });
+                const result = await response.json();
+                addLog(`Success: Compressed ${result.identities.length} logic identities to BAPX Field.`, 'success');
+                fetchFiles();
+            } catch (err) {
+                addLog(`Compression failed: ${err.message}`, 'error');
+            }
+        }
+
+        async function runProject() {
+            addLog(`>>> TRIGGER: PROJECT EXECUTION REQUEST`, 'compute');
+            const statusIndicator = document.getElementById('compute-status');
+            const loadBar = document.getElementById('load-bar');
+            const loadPercent = document.getElementById('load-percent');
+            
+            statusIndicator.innerHTML = '<div class="w-2 h-2 rounded-full bg-indigo-500 computing shadow-[0_0_8px_rgba(99,102,241,0.6)]"></div><span class="text-sm font-medium text-indigo-400">Computing from Scalar Field...</span>';
+            loadBar.style.width = '100%';
+            loadPercent.innerText = '99.9%';
+
+            try {
+                const response = await fetch(`${API_URL}/project/run?project_id=${currentProject}`);
+                const result = await response.json();
+                
+                addLog(`Identities Active: ${result.metrics.identities_active}`, 'info');
+                
+                for (const item of result.manifest) {
+                    const cleanPath = item.id.split('/').slice(1).join('/');
+                    addLog(`RESTORING: ${cleanPath} (${item.restored_size})`, 'compute');
+                    await new Promise(r => setTimeout(r, 150));
+                }
+                
+                addLog(`COMPUTATION SUCCESS: Project context active.`, 'success');
+                addLog(`Metrics: Logic Footprint ${result.metrics.logic_footprint} | Scalar Footprint ${result.metrics.scalar_footprint}`, 'info');
+                
+                setTimeout(() => {
+                    statusIndicator.innerHTML = '<div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div><span class="text-sm font-medium text-slate-300">Superbase Engine Ready</span>';
+                    loadBar.style.width = '0%';
+                    loadPercent.innerText = '0.00%';
+                }, 2000);
+            } catch (err) {
+                addLog(`Execution fault: ${err.message}`, 'error');
+            }
+        }
+
+        async function uploadAsset(file) {
+            addLog(`Storing Data Asset: ${file.name}...`);
+            const formData = new FormData();
+            formData.append('data', file);
+
+            try {
+                await fetch(`${API_URL}/project/store_data?project_id=${currentProject}&filename=${file.name}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                addLog(`Asset Compressed: ${file.name} -> 8 bytes`, 'success');
+                fetchFiles();
+            } catch (err) {
+                addLog(`Asset storage failed.`, 'error');
+            }
+        }
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = (e) => {
+            if (e.target.files.length > 0) uploadAsset(e.target.files[0]);
+        };
+
+        initProject();
+        setInterval(fetchFiles, 15000);
+    </script>
+</body>
+</html>

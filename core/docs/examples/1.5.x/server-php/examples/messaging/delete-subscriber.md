@@ -1,0 +1,16 @@
+<?php
+
+use bapXdb\Client;
+use bapXdb\Services\Messaging;
+
+$client = (new Client())
+    ->setEndpoint('https://cloud.bapxdb.io/v1') // Your API Endpoint
+    ->setProject('<YOUR_PROJECT_ID>') // Your project ID
+    ->setJWT('<YOUR_JWT>'); // Your secret JSON Web Token
+
+$messaging = new Messaging($client);
+
+$result = $messaging->deleteSubscriber(
+    topicId: '<TOPIC_ID>',
+    subscriberId: '<SUBSCRIBER_ID>'
+);

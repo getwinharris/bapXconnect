@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing | bapX - Cloud-Native Infrastructure</title>
+    <meta name="description" content="Simple, transparent pricing for cloud-native backend infrastructure. From hobby projects to enterprise-scale sovereign apps.">
+    <link rel="icon" type="image/png" href="../logo/bapXfavicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-muted);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-purple);
+        }
+        .pricing-card.featured {
+            border: 2px solid var(--accent-purple);
+            position: relative;
+        }
+        .featured-tag {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--accent-purple);
+            color: white;
+            padding: 0.25rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 1.5rem 0;
+        }
+        .price span {
+            font-size: 1rem;
+            color: var(--text-dim);
+            font-weight: normal;
+        }
+        .feature-list {
+            list-style: none;
+            margin: 2rem 0;
+            flex-grow: 1;
+        }
+        .feature-list li {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+        .feature-list li i {
+            color: var(--accent-purple);
+            font-size: 1rem;
+        }
+    </style>
+    <link rel="shortcut icon" href="../logo/bapXfavicon.png" type="image/x-icon">
+</head>
+<body class="antialiased">
+    <div class="mesh-glow"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo-link">
+                <img src="../logo/bapXmain.png" alt="bapX Logo" class="logo-img">
+            </a>
+            <ul class="nav-links">
+                        <li><a href="docs.html">Docs</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="community.html">Community</a></li>
+                        <li><a href="pricing.html" class="active">Pricing</a></li>
+                        <li><a href="login.html" class="btn btn-secondary">Sign In</a></li>
+                        <li><a href="login.html" class="btn btn-primary">Get Started</a></li>
+                    </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" style="padding-top: 8rem; padding-bottom: 4rem;">
+        <div class="container text-center">
+            <h1 class="gradient-text" style="font-size: 4rem; margin-bottom: 1.5rem;">Elite Performance.<br>Fair Pricing.</h1>
+            <p class="subtitle" style="max-width: 700px; margin: 0 auto;">bapX Media Hub: Storage as Compute that scales with your ambition. We are 40% cheaper than Supabase while offering 2x the performance.</p>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section style="padding: 4rem 0 8rem 0;">
+        <div class="container">
+            <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                <!-- Always Free -->
+                <div class="card pricing-card">
+                    <div class="pricing-header">
+                        <div class="plan-name">Always Free</div>
+                        <div class="plan-price">$0<span class="plan-period">/mo</span></div>
+                        <p class="plan-desc">Perfect for side projects and learning.</p>
+                    </div>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> <strong>1GB</strong> Storage as Compute</li>
+                        <li><i class="fas fa-check"></i> <strong>10GB</strong> Monthly Egress</li>
+                        <li><i class="fas fa-check"></i> 50,000 Monthly Active Users</li>
+                        <li><i class="fas fa-check"></i> <strong>Lifetime Memory Context</strong></li>
+                        <li><i class="fas fa-times" style="color: #ef4444;"></i> No Database Tools</li>
+                        <li><i class="fas fa-times" style="color: #ef4444;"></i> No bapX Model Access</li>
+                    </ul>
+                    <a href="login.html" class="btn btn-secondary" style="width: 100%; text-align: center; margin-top: 2rem;">Get Started</a>
+                </div>
+
+                <!-- Pilot -->
+                <div class="card pricing-card highlighted" style="border: 2px solid var(--accent-purple); position: relative; transform: scale(1.05); z-index: 10; background: rgba(168, 85, 247, 0.05); box-shadow: 0 0 40px rgba(168, 85, 247, 0.2);">
+                    <div style="position: absolute; top: -16px; left: 50%; transform: translateX(-50%); background: var(--accent-purple); color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4); white-space: nowrap;">Most Popular</div>
+                    <div class="pricing-header">
+                        <div class="plan-name">Pilot</div>
+                        <div class="plan-price">$15<span class="plan-period">/mo</span></div>
+                        <p class="plan-desc">For growing apps needing more power.</p>
+                    </div>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> <strong>20GB</strong> Storage as Compute</li>
+                        <li><i class="fas fa-check"></i> <strong>500GB</strong> Monthly Egress</li>
+                        <li><i class="fas fa-check"></i> <strong>Qwen2.5-Coder Model</strong></li>
+                        <li><i class="fas fa-check"></i> Database Integration Tools</li>
+                        <li><i class="fas fa-check"></i> Open WebUI Hub (ai.bapx.in)</li>
+                    </ul>
+                    <a href="login.html" class="btn btn-purple" style="width: 100%; text-align: center; margin-top: 2rem;">Upgrade to Pilot</a>
+                </div>
+
+                <!-- Sovereign -->
+                <div class="card pricing-card">
+                    <div class="pricing-header">
+                        <div class="plan-name">Sovereign</div>
+                        <div class="plan-price">$99<span class="plan-period">/mo</span></div>
+                        <p class="plan-desc">Enterprise-grade for mission-critical apps.</p>
+                    </div>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> <strong>200GB</strong> Storage as Compute</li>
+                        <li><i class="fas fa-check"></i> <strong>2TB</strong> Monthly Egress</li>
+                        <li><i class="fas fa-check"></i> Model API Engine (api.bapx.in)</li>
+                        <li><i class="fas fa-check"></i> Open WebUI Hub (ai.bapx.in)</li>
+                        <li><i class="fas fa-check"></i> Custom Domain + DNS</li>
+                    </ul>
+                    <a href="login.html" class="btn btn-secondary" style="width: 100%; text-align: center; margin-top: 2rem;">Go Sovereign</a>
+                </div>
+
+                <!-- Omni-Core -->
+                <div class="card pricing-card">
+                    <div class="pricing-header">
+                        <div class="plan-name">Omni-Core</div>
+                        <div class="plan-price">Custom</div>
+                        <p class="plan-desc">Tailored for hyper-scale organizations.</p>
+                    </div>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Custom Storage Limits</li>
+                        <li><i class="fas fa-check"></i> Dedicated Infrastructure</li>
+                        <li><i class="fas fa-check"></i> Custom SLA & Compliance</li>
+                        <li><i class="fas fa-check"></i> White-glove Onboarding</li>
+                        <li><i class="fas fa-check"></i> Enterprise Suffixes</li>
+                    </ul>
+                    <a href="mailto:sales@bapx.in" class="btn btn-secondary" style="width: 100%; text-align: center; margin-top: 2rem;">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section style="padding: 6rem 0; border-top: 1px solid var(--border-muted); background: rgba(255, 255, 255, 0.02);">
+        <div class="container">
+            <h2 class="text-center" style="font-size: 2.5rem; margin-bottom: 4rem;">Platform Comparison</h2>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-muted);">
+                            <th style="padding: 1.5rem; text-align: left; color: var(--text-dim);">Feature</th>
+                            <th style="padding: 1.5rem; text-align: center; color: var(--accent-purple);">bapX (Pilot)</th>
+                            <th style="padding: 1.5rem; text-align: center; color: var(--text-dim);">Supabase (Pro)</th>
+                            <th style="padding: 1.5rem; text-align: center; color: var(--text-dim);">Firebase (Pay-as-go)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--border-muted);">
+                            <td style="padding: 1.5rem;">Monthly Price</td>
+                            <td style="padding: 1.5rem; text-align: center; font-weight: 700; color: #fff;">$15</td>
+                            <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">$25</td>
+                            <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">Variable ($$$)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-muted);">
+                            <td style="padding: 1.5rem;">Storage as Compute</td>
+                            <td style="padding: 1.5rem; text-align: center; font-weight: 700; color: #fff;">20 GB</td>
+                            <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">8 GB</td>
+                            <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">5 GB (Free Tier)</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-muted);">
+                    <td style="padding: 1.5rem;">Intelligence Hub</td>
+                    <td style="padding: 1.5rem; text-align: center; font-weight: 700; color: #fff;">Open WebUI + Model API</td>
+                    <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">NO</td>
+                    <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">NO</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-muted);">
+                    <td style="padding: 1.5rem;">Cross-Platform Hosting</td>
+                            <td style="padding: 1.5rem; text-align: center; font-weight: 700; color: #fff;">Web, Android, iOS, WASM</td>
+                            <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">Web, Mobile (via API)</td>
+                            <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">Native SDKs Only</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-muted);">
+                            <td style="padding: 1.5rem;">Forever Free DNS</td>
+                            <td style="padding: 1.5rem; text-align: center; font-weight: 700; color: #fff;">YES (Loyalty)</td>
+                            <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">NO</td>
+                            <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">NO</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-muted);">
+                            <td style="padding: 1.5rem;">Omni-Messaging</td>
+                            <td style="padding: 1.5rem; text-align: center; font-weight: 700; color: #fff;">SMS, Email, Push (Included)</td>
+                            <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">Third-party required</td>
+                            <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">FCM Only</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border-muted);">
+                            <td style="padding: 1.5rem;">Zero-Ops Deploy</td>
+                            <td style="padding: 1.5rem; text-align: center; font-weight: 700; color: #fff;">Native Git Sync</td>
+                            <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">CLI Based</td>
+                            <td style="padding: 1.5rem; text-align: center; color: var(--text-dim);">CLI Based</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-center text-dim" style="margin-top: 2rem; font-size: 0.875rem;">* Pricing comparison based on public pricing as of Jan 2026. bapX offers superior unit economics and platform independence.</p>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section style="padding: 8rem 0;">
+        <div class="container">
+            <h2 class="text-center" style="font-size: 3rem; margin-bottom: 4rem;">The bapX Advantage</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <i class="fas fa-rocket" style="font-size: 2rem; color: var(--accent-purple); margin-bottom: 1.5rem;"></i>
+                    <h3>Storage as Compute</h3>
+                    <p>Stop paying for idle CPU. With bapX, your storage is the compute engine. You only pay for what you actually use, making it 40% more efficient than traditional VPS or serverless functions.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-shield-alt" style="font-size: 2rem; color: var(--accent-purple); margin-bottom: 1.5rem;"></i>
+                    <h3>Media Hub Sovereignty</h3>
+                    <p>Your data is processed within your own media hub. This ensures byte-perfect precision and complete security isolation from other tenants on the platform. Even if your subscription ends, your data remains yours—unaccessed and unexploited.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-globe" style="font-size: 2rem; color: var(--accent-purple); margin-bottom: 1.5rem;"></i>
+                    <h3>Forever Free DNS</h3>
+                    <p>Transfer your domain to our DNS. Maintain a project for 6 consecutive months and we'll keep your domain hosted on our DNS <strong>free forever</strong>, even if you stop your paid plan. We protect your digital identity.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <a href="index.html" class="logo-link">
+                        <img src="../logo/bapXmain.png" alt="bapX Logo" class="logo-img">
+                    </a>
+                    <p>bapX Media Hub: The high-performance backend where Storage is Compute. Built for speed, security, and global scale.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="docs.html">Documentation</a></li>
+                        <li><a href="pricing.html">Pricing Plans</a></li>
+                        <li><a href="community.html">Community Hub</a></li>
+                        <li><a href="changelog.html">Changelog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About bapX</a></li>
+                        <li><a href="blog.html">Technical Blog</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Status</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 bapX Media Hub. All rights reserved.</p>
+                <div style="display: flex; gap: 2rem;">
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

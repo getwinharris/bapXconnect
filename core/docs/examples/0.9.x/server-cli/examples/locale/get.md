@@ -1,0 +1,1 @@
+bapxdb locale get 

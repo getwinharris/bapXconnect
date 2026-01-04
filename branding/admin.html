@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | bapX Media Hub</title>
+    <link rel="icon" type="image/png" href="../logo/bapXfavicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="../logo/bapXfavicon.png" type="image/x-icon">
+    <style>
+        body { display: flex; height: 100vh; overflow: hidden; }
+        aside { width: 260px; border-right: 1px solid var(--border-muted); padding: 1.5rem; }
+        main { flex: 1; padding: 2rem; overflow-y: auto; }
+        .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; color: var(--text-dim); }
+        .nav-item:hover, .nav-item.active { background: var(--border-muted); color: white; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border-muted); padding: 1.5rem; border-radius: 1rem; }
+        .btn-sm { padding: 0.4rem 1rem; font-size: 0.8rem; }
+        textarea, input, select { width: 100%; background: #111; border: 1px solid var(--border-muted); color: white; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <aside style="display: flex; flex-direction: column;">
+        <div class="logo-container mb-8" style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2.5rem;">
+            <img src="../logo/bapXmain.png" alt="bapX Logo" style="height: 32px;">
+            <div class="logo-text">
+                <span class="logo-name" style="font-weight: 800; font-size: 1.25rem;">bapX</span>
+                <span class="logo-tagline" style="display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Media Hub Console</span>
+            </div>
+        </div>
+
+        <!-- Product Switcher -->
+        <div style="margin-bottom: 2rem; background: rgba(168, 85, 247, 0.05); border: 1px solid var(--border-muted); border-radius: 12px; padding: 0.5rem;">
+            <div style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-dim); margin: 0.5rem; letter-spacing: 0.05em;">Switch Product</div>
+            <a href="http://localhost:8000/admin.html" class="nav-item active" style="margin-bottom: 0.25rem;">
+                <i class="fas fa-database"></i> bapXdb Hub
+            </a>
+            <a href="http://localhost:3000" class="nav-item" style="margin-bottom: 0;">
+                <i class="fas fa-robot"></i> AI Hub (Open WebUI)
+            </a>
+        </div>
+
+        <nav style="flex: 1;">
+            <a href="#" class="nav-item active"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="#" class="nav-item"><i class="fas fa-server"></i> Storage Hubs</a>
+            <a href="#" class="nav-item"><i class="fas fa-users"></i> Identities</a>
+            <a href="blog.html" class="nav-item"><i class="fas fa-file-alt"></i> Community Blog</a>
+            <a href="#" class="nav-item"><i class="fas fa-globe"></i> Domains</a>
+            <a href="#" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+
+        <div style="padding-top: 1rem; border-top: 1px solid var(--border-muted);">
+            <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.5rem;">Unified Account</div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="width: 32px; height: 32px; background: var(--accent-purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.875rem;">JD</div>
+                <div style="font-size: 0.875rem; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">John Doe</div>
+            </div>
+        </div>
+    </aside>
+
+    <main>
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold">Storage as Compute Orchestration</h1>
+            <div style="display: flex; gap: 1rem;">
+                <a href="http://localhost:3000" class="btn btn-secondary btn-sm" target="_blank">AGI Support</a>
+                <button class="btn btn-purple btn-sm">New Hub</button>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <a href="http://localhost:3000" class="card" style="text-decoration: none; border-color: var(--accent-purple); background: rgba(168, 85, 247, 0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.875rem; color: var(--text-dim);">Open WebUI Hub</span>
+                    <i class="fas fa-brain" style="color: var(--accent-purple);"></i>
+                </div>
+                <div style="font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0;">localhost:3000</div>
+                <div style="font-size: 0.75rem; color: var(--accent-purple);">Wired to bapX Database</div>
+            </a>
+            <a href="http://localhost:3000/settings" class="card" style="text-decoration: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.875rem; color: var(--text-dim);">API & Model Settings</span>
+                    <i class="fas fa-key"></i>
+                </div>
+                <div style="font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0;">Unified API Keys</div>
+                <div style="font-size: 0.75rem; color: var(--text-dim);">Manage Keys for bapX & AI</div>
+            </a>
+            <div class="card" style="border-color: var(--accent-purple); background: rgba(168, 85, 247, 0.02);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.875rem; color: var(--text-dim);">Model Engine (llama.cpp)</span>
+                    <i class="fas fa-microchip" style="color: var(--accent-purple);"></i>
+                </div>
+                <div style="font-size: 1.25rem; font-weight: 700; margin: 0.5rem 0;">Qwen2.5-Coder-7B</div>
+                <div style="font-size: 0.75rem; color: var(--accent-purple);">Running at localhost:3000</div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem; border-color: var(--accent-purple);">
+            <h3 style="margin-bottom: 1.5rem;">Project Name Availability</h3>
+            <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <label style="font-size: 0.875rem; color: var(--text-dim); display: block; margin-bottom: 0.5rem;">Desired Project Name</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-dim);">bapx.</span>
+                        <input type="text" id="project-checker" placeholder="your-project" style="padding-left: 3.8rem; padding-right: 2.5rem; width: 100%;">
+                        <span style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-dim);">.in</span>
+                    </div>
+                </div>
+                <button class="btn btn-purple" onclick="checkAvailability()">Check Availability</button>
+            </div>
+            <div id="checker-status" style="margin-top: 1rem; font-size: 0.875rem; display: none;">
+                <i class="fas fa-check-circle" style="color: #22c55e; margin-right: 0.5rem;"></i>
+                <span style="color: #fff;">Congratulations! <strong id="available-name"></strong> is available.</span>
+            </div>
+            <script>
+                function checkAvailability() {
+                    const name = document.getElementById('project-checker').value;
+                    const status = document.getElementById('checker-status');
+                    const availableName = document.getElementById('available-name');
+                    if (name) {
+                        availableName.textContent = `bapx.${name}.in`;
+                        status.style.display = 'block';
+                    }
+                }
+            </script>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Compute Nodes</h3>
+                <p class="gradient-text" style="font-size: 2.5rem; margin: 1rem 0;">12</p>
+                <div style="height: 4px; background: var(--border-muted); border-radius: 2px;">
+                    <div style="width: 80%; height: 100%; background: var(--accent-purple); border-radius: 2px;"></div>
+                </div>
+                <p style="font-size: 0.875rem; color: var(--text-dim); margin-top: 1rem;">Health: 99.98% uptime</p>
+            </div>
+            <div class="card">
+                <h3>Identities</h3>
+                <p class="gradient-text" style="font-size: 2.5rem; margin: 1rem 0;">1.2M</p>
+                <p style="font-size: 0.875rem; color: var(--text-dim);">Mapped across bapx.[project].in identities</p>
+                <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem;">
+                    <span style="padding: 2px 8px; background: rgba(168, 85, 247, 0.1); color: var(--accent-purple); border-radius: 4px; font-size: 0.75rem;">AI.BAPX.IN</span>
+                    <span style="padding: 2px 8px; background: rgba(168, 85, 247, 0.1); color: var(--accent-purple); border-radius: 4px; font-size: 0.75rem;">MATE.BAPX.IN</span>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Infrastructure</h3>
+                <div style="background: #000; border: 1px solid var(--border-muted); border-radius: 8px; padding: 1rem; font-family: 'Geist Mono', monospace; font-size: 0.75rem; color: #0f0; margin-top: 1rem;">
+                    <div>$ bapx-cli status --all</div>
+                    <div style="color: #fff;">- storage-hubs: HEALTHY</div>
+                    <div style="color: #fff;">- compute-layers: ACTIVE</div>
+                    <div style="color: #fff;">- auto-deploy: SYNCING</div>
+                    <div style="color: #fff; border-right: 2px solid #fff; width: fit-content; animation: blink 1s step-end infinite;">_</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+            <h2 style="margin-bottom: 2rem;">Blog & Community Management</h2>
+            <form action="#" style="display: grid; gap: 1.5rem;">
+                <div style="display: grid; gap: 0.5rem;">
+                    <label style="font-size: 0.875rem; color: var(--text-dim);">Article Title</label>
+                    <input type="text" placeholder="e.g. Scaling bapX to 1B Requests" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-muted); padding: 0.75rem; border-radius: 8px; color: #fff; width: 100%;">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div style="display: grid; gap: 0.5rem;">
+                        <label style="font-size: 0.875rem; color: var(--text-dim);">Category</label>
+                        <select style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-muted); padding: 0.75rem; border-radius: 8px; color: #fff;">
+                            <option>Engineering</option>
+                            <option>Comparison</option>
+                            <option>Guide</option>
+                            <option>Product</option>
+                        </select>
+                    </div>
+                    <div style="display: grid; gap: 0.5rem;">
+                        <label style="font-size: 0.875rem; color: var(--text-dim);">SEO Tags (comma separated)</label>
+                        <input type="text" placeholder="wasm, backend, scaling, rust" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-muted); padding: 0.75rem; border-radius: 8px; color: #fff;">
+                    </div>
+                </div>
+                <div style="display: grid; gap: 0.5rem;">
+                    <label style="font-size: 0.875rem; color: var(--text-dim);">Content (Markdown supported)</label>
+                    <textarea rows="8" placeholder="Start writing your masterpiece..." style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-muted); padding: 0.75rem; border-radius: 8px; color: #fff; font-family: inherit; resize: vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="justify-self: start; padding: 0.75rem 2rem;">Publish Post</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,1 @@
+bapxdb health getDB

@@ -1,0 +1,1 @@
+bapxdb users getSessions --userId="[USER_ID]" 

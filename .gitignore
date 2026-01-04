@@ -1,0 +1,51 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build/Cache
+.cache/
+.gemini/
+__pycache__/
+ai/bapx-ui/backend/data/cache/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+bin/
+lib/
+include/
+setapi.egg-info/
+dist/
+build/
+.svelte-kit/
+.next/
+out/
+.nuxt/
+.output/
+
+# Dependencies
+node_modules/
+bower_components/
+vendor/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Databases
+*.db
+*.sqlite
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -1,0 +1,16 @@
+{
+  "name": "bapx-db-ai-platform",
+  "version": "1.8.7",
+  "description": "Unified bapXdb and bapX AI Platform",
+  "scripts": {
+    "start:ai": "cd ai/bapx-ui && npm run start",
+    "dev:ai": "cd ai/bapx-ui && npm run dev",
+    "build:ai": "cd ai/bapx-ui && npm run build",
+    "start:core": "cd core && php -S localhost:8000 -t public",
+    "dev": "concurrently \"npm run dev:ai\" \"npm run start:core\"",
+    "install:all": "npm install && cd ai/bapx-ui && npm install && cd ../../core && composer install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

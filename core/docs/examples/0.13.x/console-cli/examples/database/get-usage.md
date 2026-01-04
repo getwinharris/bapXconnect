@@ -1,0 +1,2 @@
+bapxdb database getUsage \
+

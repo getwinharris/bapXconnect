@@ -1,0 +1,20 @@
+using bapXdb;
+using bapXdb.Enums;
+using bapXdb.Models;
+using bapXdb.Services;
+
+Client client = new Client()
+    .SetEndPoint("https://<REGION>.cloud.bapxdb.io/v1") // Your API Endpoint
+    .SetProject("<YOUR_PROJECT_ID>") // Your project ID
+    .SetKey("<YOUR_API_KEY>"); // Your secret API key
+
+Users users = new Users(client);
+
+Target result = await users.CreateTarget(
+    userId: "<USER_ID>",
+    targetId: "<TARGET_ID>",
+    providerType: MessagingProviderType.Email,
+    identifier: "<IDENTIFIER>",
+    providerId: "<PROVIDER_ID>", // optional
+    name: "<NAME>" // optional
+);

@@ -1,0 +1,7 @@
+bapxdb database listCollections \
+
+
+
+
+
+

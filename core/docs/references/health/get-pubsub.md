@@ -1,0 +1,1 @@
+Check the bapXdb pub-sub servers are up and connection is successful.

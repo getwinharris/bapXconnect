@@ -1,0 +1,11 @@
+import io.bapxdb.Client
+import io.bapxdb.services.Health
+
+val client = Client(context)
+    .setEndpoint("https://<REGION>.cloud.bapxdb.io/v1") // Your API Endpoint
+    .setProject("5df5acd0d48c2") // Your project ID
+    .setKey("919c2d18fb5d4...a2ae413da83346ad2") // Your secret API key
+
+val health = Health(client)
+
+val response = health.getTime()

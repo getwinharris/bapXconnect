@@ -1,0 +1,1 @@
+Import documents from a CSV file into your bapXdb database. This endpoint allows you to import documents from a CSV file uploaded to bapXdb Storage bucket.

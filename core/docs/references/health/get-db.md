@@ -1,0 +1,1 @@
+Check the bapXdb database servers are up and connection is successful.

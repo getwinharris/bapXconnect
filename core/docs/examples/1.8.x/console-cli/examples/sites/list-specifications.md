@@ -1,0 +1,1 @@
+bapxdb sites list-specifications

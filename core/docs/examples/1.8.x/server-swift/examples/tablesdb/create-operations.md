@@ -1,0 +1,24 @@
+import bapXdb
+
+let client = Client()
+    .setEndpoint("https://<REGION>.cloud.bapxdb.io/v1") // Your API Endpoint
+    .setProject("<YOUR_PROJECT_ID>") // Your project ID
+    .setKey("<YOUR_API_KEY>") // Your secret API key
+
+let tablesDB = TablesDB(client)
+
+let transaction = try await tablesDB.createOperations(
+    transactionId: "<TRANSACTION_ID>",
+    operations: [
+	    {
+	        "action": "create",
+	        "databaseId": "<DATABASE_ID>",
+	        "tableId": "<TABLE_ID>",
+	        "rowId": "<ROW_ID>",
+	        "data": {
+	            "name": "Walter O'Brien"
+	        }
+	    }
+	] // optional
+)
+

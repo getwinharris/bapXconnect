@@ -1,0 +1,22 @@
+<?php
+
+use bapXdb\Client;
+use bapXdb\Services\Databases;
+use bapXdb\Permission;
+use bapXdb\Role;
+
+$client = (new Client())
+    ->setEndpoint('https://<REGION>.cloud.bapxdb.io/v1') // Your API Endpoint
+    ->setProject('<YOUR_PROJECT_ID>') // Your project ID
+    ->setKey('<YOUR_API_KEY>'); // Your secret API key
+
+$databases = new Databases($client);
+
+$result = $databases->updateCollection(
+    databaseId: '<DATABASE_ID>',
+    collectionId: '<COLLECTION_ID>',
+    name: '<NAME>',
+    permissions: [Permission::read(Role::any())], // optional
+    documentSecurity: false, // optional
+    enabled: false // optional
+);

@@ -1,0 +1,1 @@
+Create a new Table. Before using this route, you should create a new database resource using either a [server integration](https://bapxdb.io/docs/references/cloud/server-dart/tablesDB#createTable) API or directly from your database console.

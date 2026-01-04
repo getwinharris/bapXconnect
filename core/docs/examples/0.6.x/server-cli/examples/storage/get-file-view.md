@@ -1,0 +1,1 @@
+bapxdb storage getFileView --fileId="[FILE_ID]" --as="pdf" 

@@ -1,0 +1,2 @@
+bapxdb account listIdentities \
+

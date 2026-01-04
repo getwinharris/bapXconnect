@@ -1,0 +1,3 @@
+bapxdb account getLogs \
+
+

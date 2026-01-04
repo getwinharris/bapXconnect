@@ -1,0 +1,1 @@
+bapxdb vcs list-installations
